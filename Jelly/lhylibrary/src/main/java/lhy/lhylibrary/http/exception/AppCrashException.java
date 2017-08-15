@@ -19,7 +19,7 @@ import lhy.lhylibrary.utils.FileUtils;
 /**
  * Created by Liheyu on 2017/5/15.
  * Email:liheyu999@163.com
- * APP crash 错误收集
+ * APP crash 错误日志收集
  */
 
 public class AppCrashException implements Thread.UncaughtExceptionHandler {

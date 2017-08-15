@@ -108,6 +108,7 @@ public class BaseApplication extends Application {
     public static BaseApplication getInstance() {
         return instance;
     }
+
     public static Context getContext () {
         return context;
     }

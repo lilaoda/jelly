@@ -51,20 +51,11 @@ public class OkhttpManager {
         return instance;
     }
 
-    /**
-     * 不带缓存的Okhttp客户端
-     *
-     * @return
-     */
+
     public OkHttpClient getOKhttp() {
         return mOkHttpBuilder.build();
     }
 
-    /**
-     * 带缓存的OKhttp客户羰
-     *
-     * @return
-     */
     public OkHttpClient getCacheOKhttp() {
         return mOkHttpBuilder
                 .cache(new Cache(FileUtils.getCacheFile(BaseApplication.getContext(), "file_cache"), 1024 * 1024 * 100))

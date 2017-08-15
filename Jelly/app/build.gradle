@@ -24,6 +24,10 @@ android {
         daoPackage 'lhy.jelly.data.local.gen'
         targetGenDir 'src/main/java'
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 dependencies {

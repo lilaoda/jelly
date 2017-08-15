@@ -1,4 +1,4 @@
-package lhy.jelly;
+package lhy.jelly.data;
 
 import android.content.Context;
 
@@ -6,35 +6,31 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import lhy.jelly.data.local.entity.User;
+import lhy.jelly.data.remote.ApiService;
 
 /**
  * Created by Liheyu on 2017/8/14.
  * Email:liheyu999@163.com
  */
-
 @Singleton
 @Module
-public final class ApplicationModule {
+public class RepositoryModule {
 
     private final Context context;
-    private User user;
 
-    public ApplicationModule(Context context) {
+    public RepositoryModule(Context context) {
         this.context = context;
     }
 
-
     @Singleton
     @Provides
-    public Context provideContext() {
-        return context;
+    public DbManager provideDbManager() {
+        return DbManager.getInstance(context);
     }
 
-    //不加singleton不是单例
     @Singleton
     @Provides
-    public User provideUser() {
-        return new User();
+    public ApiService provideApiService() {
+        return HttpManager.getInstance().getApiService();
     }
 }
