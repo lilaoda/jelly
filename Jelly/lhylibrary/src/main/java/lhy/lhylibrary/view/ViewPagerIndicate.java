@@ -1,6 +1,9 @@
 package lhy.lhylibrary.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -11,6 +14,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import java.util.List;
+
+import lhy.lhylibrary.R;
 
 
 /**
@@ -25,7 +30,15 @@ public class ViewPagerIndicate extends HorizontalScrollView implements ViewPager
     private ViewPager mViewPager;
     private LinearLayout mRootLinearlayout;
     private PagerAdapter mPagerAdapter;
+    private Paint mPaint;
+
     private List<String> mTitles;
+
+    private int mTextColorNormal;
+    private int mTextColorSelected;
+    private int mTextSize;
+    private int mUnderlineColor;
+    private int mUnderlineHeight;
 
     public ViewPagerIndicate(Context context) {
         this(context, null);
@@ -38,6 +51,12 @@ public class ViewPagerIndicate extends HorizontalScrollView implements ViewPager
     public ViewPagerIndicate(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView();
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ViewPagerIndicate);
+        mTextColorNormal = typedArray.getColor(R.styleable.ViewPagerIndicate_normal_textcolor, getResources().getColor(R.color.colorPrimary));
+        mTextColorSelected = typedArray.getColor(R.styleable.ViewPagerIndicate_selected_textcolor, Color.BLACK);
+        mUnderlineColor = typedArray.getColor(R.styleable.ViewPagerIndicate_underline_color, getResources().getColor(R.color.colorPrimary));
+        mUnderlineHeight = typedArray.getColor(R.styleable.ViewPagerIndicate_underline_height, dp2px(2));
+        mTextSize = typedArray.getColor(R.styleable.ViewPagerIndicate_textsize, dp2px(15));
     }
 
     private void initView() {
@@ -45,6 +64,7 @@ public class ViewPagerIndicate extends HorizontalScrollView implements ViewPager
         mRootLinearlayout.setOrientation(LinearLayout.HORIZONTAL);
         mRootLinearlayout.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         addView(mRootLinearlayout);
+        mPaint = new Paint();
     }
 
     public void setViewPager(ViewPager viewPager, List<String> titles) {
@@ -52,6 +72,7 @@ public class ViewPagerIndicate extends HorizontalScrollView implements ViewPager
             Log.e(TAG, "ViewPagerIndicate must set ViewPager ");
             return;
         }
+
         this.mViewPager = viewPager;
         this.mPagerAdapter = viewPager.getAdapter();
         this.mTitles = titles;
@@ -71,7 +92,10 @@ public class ViewPagerIndicate extends HorizontalScrollView implements ViewPager
     }
 
     private void notifyDataChanged() {
-        //    if(mPagerAdapter.getCount())
+        for (int i = 0; i < mTitles.size(); i++) {
+
+        }
+          //  if(mPagerAdapter.getCount())
     }
 
     private void setSelectedTab(int position) {
@@ -104,5 +128,15 @@ public class ViewPagerIndicate extends HorizontalScrollView implements ViewPager
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    protected int dp2px(float dp) {
+        final float scale = getContext().getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
+    }
+
+    protected int sp2px(float sp) {
+        final float scale = getContext().getResources().getDisplayMetrics().scaledDensity;
+        return (int) (sp * scale + 0.5f);
     }
 }

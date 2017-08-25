@@ -26,8 +26,7 @@ public class MainPresenter {
     }
 
     public void showToast() {
-        mainActivity.showToast();
-        mainActivity.showToast();
+
         Logger.d(apiService);
     }
 }

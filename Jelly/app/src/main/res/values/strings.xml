@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Jelly</string>
+    <string name="draw_open">open</string>
+    <string name="draw_close">close</string>
 </resources>

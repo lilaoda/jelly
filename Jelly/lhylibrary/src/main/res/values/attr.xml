@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ViewPagerIndicate">
+        <attr name="normal_textcolor" format="color|reference" />
+        <attr name="selected_textcolor" format="color|reference" />
+        <attr name="textsize" format="dimension" />
+        <attr name="underline_color" format="color|reference" />
+        <attr name="underline_height" format="dimension" />
+    </declare-styleable>
+</resources>

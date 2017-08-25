@@ -1,6 +1,7 @@
 package lhy.lhylibrary.base;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -20,6 +21,14 @@ public class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //如果长时间在后台 fragment getactivity()可能为空，因为可能系统回收掉了activity，但是保存了FRAGMENT的状态，现在又重启ACTIVITY
+        if (savedInstanceState != null) {
+            String FRAGMENTS_TAG = "Android:support:fragments";
+            savedInstanceState.remove(FRAGMENTS_TAG);
+        }
+       // getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         BaseApplication.getInstance().addActivity(this);
     }
 

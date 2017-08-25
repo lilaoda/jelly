@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 24
@@ -7,7 +8,7 @@ android {
     defaultConfig {
         applicationId "lhy.jelly"
         minSdkVersion 16
-        targetSdkVersion 24
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -18,8 +19,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-        greendao {
+    greendao {
         schemaVersion 1
         daoPackage 'lhy.jelly.data.local.gen'
         targetGenDir 'src/main/java'
@@ -27,6 +27,8 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+    productFlavors {
     }
 }
 
@@ -42,4 +44,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
     compile project(':lhylibrary')
     compile project(':zxinglibrary')
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
