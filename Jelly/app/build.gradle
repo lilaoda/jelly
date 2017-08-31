@@ -3,20 +3,33 @@ apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'com.jakewharton.butterknife'
 
 android {
+    signingConfigs {
+        release {
+            keyPassword '999999999'
+            storeFile file('G:/jellyApp/jelly(999999999).jks')
+            storePassword '999999999'
+            keyAlias 'key_release'
+        }
+    }
     compileSdkVersion 24
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "lhy.jelly"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
         }
     }
     greendao {
@@ -29,6 +42,18 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     productFlavors {
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    defaultConfig {
+        ndk {
+            //设置支持的SO库架构
+            abiFilters "armeabi"
+//                 "armeabi-v7a",  "x86","arm64-v8a","x86_64"
+        }
     }
 }
 
@@ -47,4 +72,17 @@ dependencies {
     compile 'com.android.support:design:24.2.1'
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    // 添加依赖。注意，版本号必须一致。
+    // 基础功能 (必需)
+    compile 'com.netease.nimlib:basesdk:3.3.0'
+    // 音视频需要
+    compile 'com.netease.nimlib:avchat:3.3.0'
+    // 聊天室需要
+    compile 'com.netease.nimlib:chatroom:3.3.0'
+    // 实时会话服务需要
+    compile 'com.netease.nimlib:rts:3.3.0'
+    // 全文检索服务需要
+    compile 'com.netease.nimlib:lucene:3.3.0'
+    compile files('libs/AMap3DMap_5.3.0_AMapNavi_5.3.0_AMapSearch_5.3.1_AMapLocation_3.5.0_20170817.jar')
+    compile 'com.android.support:multidex:1.0.0'
 }

@@ -1,5 +1,8 @@
 package lhy.jelly;
 
+import android.content.Context;
+import android.support.multidex.MultiDex;
+
 import lhy.jelly.data.RepositoryModule;
 import lhy.lhylibrary.base.BaseApplication;
 
@@ -19,6 +22,12 @@ public class JellyApplicaiton extends BaseApplication {
                 .repositoryModule(new RepositoryModule(this))
                 .applicationModule(new ApplicationModule(this))
                 .build();
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     public ApplicationComponent getApplicationComponent() {

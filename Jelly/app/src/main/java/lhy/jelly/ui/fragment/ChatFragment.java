@@ -12,6 +12,7 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 import lhy.jelly.R;
+import lhy.jelly.ui.activity.MapActivity;
 import lhy.lhylibrary.activity.ShowPhotoActivity;
 import lhy.lhylibrary.base.BaseFragment;
 import me.nereo.multi_image_selector.MultiImageSelector;
@@ -22,7 +23,6 @@ import me.nereo.multi_image_selector.MultiImageSelector;
  */
 
 public class ChatFragment extends BaseFragment {
-
 
     private ArrayList<String> mPhotoList;
 
@@ -43,7 +43,8 @@ public class ChatFragment extends BaseFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAlbum();
+               // openAlbum();
+                startActivity(new Intent(getActivity(), MapActivity.class));
             }
         });
         return view;
