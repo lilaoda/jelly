@@ -120,7 +120,6 @@ public abstract class HttpObserver<T> implements Observer<T> {
     }
 
     private void showDialog() {
-
         //如果未传activity就不显示对话框
         if (mActivity == null) {
             return;
@@ -158,6 +157,5 @@ public abstract class HttpObserver<T> implements Observer<T> {
     }
 
     public void onFailure(String msg) {
-
     }
 }

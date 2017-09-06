@@ -30,7 +30,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.Main2Activity"/>
         <activity android:name=".ui.activity.MapActivity"/>
         <!--高德地图-->
         <service android:name="com.amap.api.location.APSService"/>

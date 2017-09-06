@@ -23,14 +23,6 @@ public class MusicAdapter extends BaseQuickAdapter<MusicInfo,BaseViewHolder> {
         super(layoutResId, data);
     }
 
-    public MusicAdapter(@Nullable List<MusicInfo> data) {
-        super(data);
-    }
-
-    public MusicAdapter(@LayoutRes int layoutResId) {
-        super(layoutResId);
-    }
-
     @Override
     protected void convert(BaseViewHolder helper, MusicInfo item) {
         helper.setText(R.id.text_music_name,item.getMusicName());
