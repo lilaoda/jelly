@@ -42,7 +42,7 @@ public class MainActivity extends BaseActivity {
 
     private List<BaseFragment> mFragment;
     private ArrayList<CustomTabEntity> mTabEntitys;
-    private String[] mTitles = {"音乐", "视频", "聊天", "我的"};
+    private String[] mTitles = {"音乐", "视频", "社区", "工具"};
     private int[] mIconUnselectIds = {
             R.mipmap.home_normal, R.drawable.ic_music_note_black_24dp,
             R.mipmap.home_normal, R.mipmap.home_normal,};
