@@ -63,7 +63,6 @@ public class MusicFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_music, null);
         unbinder = ButterKnife.bind(this, view);
         initView();
-        Logger.d("MusicFragment:"+"oncreateView");
         return view;
     }
 

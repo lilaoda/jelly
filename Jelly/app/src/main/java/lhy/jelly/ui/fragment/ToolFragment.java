@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.orhanobut.logger.Logger;
-
 import lhy.jelly.R;
 import lhy.lhylibrary.base.BaseFragment;
 
@@ -16,12 +14,12 @@ import lhy.lhylibrary.base.BaseFragment;
  * Email:liheyu999@163.com
  */
 
-public class MeFragment extends BaseFragment {
-    public static MeFragment newInstance() {
+public class ToolFragment extends BaseFragment {
+    public static ToolFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        MeFragment fragment = new MeFragment();
+        ToolFragment fragment = new ToolFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -29,7 +27,6 @@ public class MeFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Logger.d("MeFragment:"+"oncreateView");
         return  inflater.inflate(R.layout.fragment_me,null);
     }
 }

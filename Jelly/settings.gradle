@@ -1,1 +1,1 @@
-include ':app', ':lhylibrary', ':zxinglibrary'
+include ':app', ':lhylibrary', ':zxinglibrary', ':ijkplayer'

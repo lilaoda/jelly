@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 import lhy.jelly.R;
 import lhy.jelly.bean.TabBean;
 import lhy.jelly.ui.fragment.ChatFragment;
-import lhy.jelly.ui.fragment.MeFragment;
+import lhy.jelly.ui.fragment.ToolFragment;
 import lhy.jelly.ui.fragment.MusicFragment;
 import lhy.jelly.ui.fragment.VideoFragment;
 import lhy.lhylibrary.base.BaseActivity;
@@ -83,7 +83,7 @@ public class MainActivity extends BaseActivity {
         mFragment.add(MusicFragment.newInstance());
         mFragment.add(VideoFragment.newInstance());
         mFragment.add(ChatFragment.newInstance());
-        mFragment.add(MeFragment.newInstance());
+        mFragment.add(ToolFragment.newInstance());
         viewPager.setAdapter(new MainAdapter(getSupportFragmentManager(), mFragment));
 
         mTabEntitys = new ArrayList<>();

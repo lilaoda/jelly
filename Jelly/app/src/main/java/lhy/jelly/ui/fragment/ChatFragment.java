@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.orhanobut.logger.Logger;
-
 import java.util.ArrayList;
 
 import lhy.jelly.R;
@@ -50,7 +48,6 @@ public class ChatFragment extends BaseFragment {
             }
         });
 
-        Logger.d("chatfragment:"+"oncreateView");
         return view;
     }
 
