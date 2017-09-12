@@ -96,19 +96,19 @@ public class ShowPhotoActivity extends AppCompatActivity {
         mTextPosition.setText(position + 1 + "/" + mList.size());
     }
 
-    static class PhotoAdapter extends PagerAdapter {
+     private class PhotoAdapter extends PagerAdapter {
 
-        private List<String> mdata;
+        private List<String> mData;
         private Activity activity;
 
         public PhotoAdapter(Activity activity, List<String> mdata) {
             this.activity = activity;
-            this.mdata = mdata;
+            this.mData = mdata;
         }
 
         @Override
         public int getCount() {
-            return mdata.size();
+            return mData.size();
         }
 
         @Override
@@ -119,7 +119,7 @@ public class ShowPhotoActivity extends AppCompatActivity {
         @Override
         public View instantiateItem(ViewGroup container, int position) {
             ImageView view = (ImageView) LayoutInflater.from(container.getContext()).inflate(R.layout.show_photo_img, null, false);
-            Glide.with(activity).load(mdata.get(position)).into(view);
+            Glide.with(activity).load(mData.get(position)).into(view);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

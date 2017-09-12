@@ -20,8 +20,8 @@ import butterknife.ButterKnife;
 import lhy.jelly.R;
 import lhy.jelly.bean.TabBean;
 import lhy.jelly.ui.fragment.ChatFragment;
-import lhy.jelly.ui.fragment.ToolFragment;
 import lhy.jelly.ui.fragment.MusicFragment;
+import lhy.jelly.ui.fragment.ToolFragment;
 import lhy.jelly.ui.fragment.VideoFragment;
 import lhy.lhylibrary.base.BaseActivity;
 import lhy.lhylibrary.base.BaseFragment;
@@ -143,4 +143,5 @@ public class MainActivity extends BaseActivity {
             return mFragment.size();
         }
     }
+
 }

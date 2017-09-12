@@ -1,4 +1,4 @@
-package lhy.lhylibrary.photoView;
+package lhy.lhylibrary.view.photoView;
 
 import android.graphics.RectF;
 

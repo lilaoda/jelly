@@ -17,15 +17,15 @@ import lhy.lhylibrary.utils.DateUtils;
 import lhy.lhylibrary.utils.FileUtils;
 
 /**
- * Created by Liheyu on 2017/5/15.
+ * Created by Liheyu on 2016/5/15.
  * Email:liheyu999@163.com
  * APP crash 错误日志收集
  */
 
 public class AppCrashException implements Thread.UncaughtExceptionHandler {
 
-    public static final String DIR_CRASH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "LhyLibrary";
     public static final String TAG = "AppCrashException";
+    public static final String DIR_CRASH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "LhyLibrary";
     private static AppCrashException INSTANCE = new AppCrashException();
 
     //must init in aplliction  otherwise crash;

@@ -67,24 +67,24 @@ dependencies {
     compile 'org.greenrobot:greendao:3.2.2'
     compile 'com.google.dagger:dagger:2.11'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
-    compile project(':lhylibrary')
     compile project(':zxinglibrary')
     compile 'com.android.support:design:24.2.1'
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    // 添加依赖。注意，版本号必须一致。
-    // 基础功能 (必需)
-    //    compile 'com.netease.nimlib:basesdk:3.3.0'
-    //    // 音视频需要
-    //    compile 'com.netease.nimlib:avchat:3.3.0'
-    //    // 聊天室需要
-    //    compile 'com.netease.nimlib:chatroom:3.3.0'
-    //    // 实时会话服务需要
-    //    compile 'com.netease.nimlib:rts:3.3.0'
-    //    // 全文检索服务需要
-    //    compile 'com.netease.nimlib:lucene:3.3.0'
+    //     添加依赖。注意，版本号必须一致。
+    //     基础功能 (必需)
+    compile 'com.netease.nimlib:basesdk:3.3.0'
+    // 音视频需要
+    compile 'com.netease.nimlib:avchat:3.3.0'
+    // 聊天室需要
+    compile 'com.netease.nimlib:chatroom:3.3.0'
+    // 实时会话服务需要
+    compile 'com.netease.nimlib:rts:3.3.0'
+    // 全文检索服务需要
+    compile 'com.netease.nimlib:lucene:3.3.0'
     compile files('libs/AMap3DMap_5.3.0_AMapNavi_5.3.0_AMapSearch_5.3.1_AMapLocation_3.5.0_20170817.jar')
     compile 'com.android.support:multidex:1.0.0'
     compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
     compile project(':ijkplayer')
+    compile project(':lhylibrary')
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package lhy.lhylibrary.photoView;
+package lhy.lhylibrary.view.photoView;
 
 import android.content.Context;
 import android.view.MotionEvent;
