@@ -13,8 +13,7 @@ import okhttp3.Response;
 
 
 /**
- * Created by Liheyu on 2017/3/9.
- * Email:liheyu999@163.com
+ *
  * 缓存拦截器 添加缓存 只针对GET有效
  */
 public class CacheIntercepter implements Interceptor {

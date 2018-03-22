@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lhy.lhylibrary.R;
+import lhy.lhylibrary.base.LhyActivity;
 import lhy.lhylibrary.utils.StatusBarUtil;
 
 /**
@@ -29,7 +29,7 @@ import lhy.lhylibrary.utils.StatusBarUtil;
  * 纯用于展示图片
  */
 
-public class ShowPhotoActivity extends AppCompatActivity {
+public class ShowPhotoActivity extends LhyActivity {
 
     public static final String PHOTO_LIST = "photo_list";
     public static final String PHOTO_CURRENT_POSITION = "photo_current_position";

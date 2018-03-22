@@ -25,7 +25,7 @@ public class CircleDialog extends Dialog {
         setContentView(view);
         Window mDialogWindow = getWindow();
         mDialogWindow.setGravity(gravity);
-        mDialogWindow.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.shape_circle_corner));
+        mDialogWindow.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.shape_circle_corner_white));
         if (width > 0 && height > 0) {
             WindowManager.LayoutParams params = mDialogWindow.getAttributes();
             int defaultWidth = mDialogWindow.getWindowManager().getDefaultDisplay().getWidth();
@@ -39,7 +39,7 @@ public class CircleDialog extends Dialog {
         setContentView(view);
         Window mDialogWindow = getWindow();
         mDialogWindow.setGravity(gravity);
-        mDialogWindow.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.shape_circle_corner));
+        mDialogWindow.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.shape_circle_corner_white));
         if (width != 0) {
             WindowManager.LayoutParams params = mDialogWindow.getAttributes();
             int defaultWidth = mDialogWindow.getWindowManager().getDefaultDisplay().getWidth();

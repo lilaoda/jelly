@@ -61,6 +61,8 @@ public class AppCrashException implements Thread.UncaughtExceptionHandler {
 
     private void writeString2File(String content) {
         if (FileUtils.isSDCardEnabled()) {
+            File file1 = new File(DIR_CRASH);
+            if(!file1.exists())file1.mkdirs();
             File file = new File(DIR_CRASH, DateUtils.getCurrentTime());
             try {
                 FileWriter fileWriter = new FileWriter(file);

@@ -15,8 +15,11 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import lhy.jelly.JellyApplicaiton;
 import lhy.jelly.R;
 import lhy.jelly.bean.TabBean;
 import lhy.jelly.ui.fragment.ChatFragment;
@@ -29,7 +32,7 @@ import lhy.lhylibrary.view.tablayout.CommonTabLayout;
 import lhy.lhylibrary.view.tablayout.listener.CustomTabEntity;
 import lhy.lhylibrary.view.tablayout.listener.OnTabSelectListener;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity  {
 
     @BindView(R.id.viewPager)
     ViewPager viewPager;
@@ -39,6 +42,9 @@ public class MainActivity extends BaseActivity {
     DrawerLayout drawlayout;
     @BindView(R.id.tabLayout)
     CommonTabLayout tabLayout;
+
+    @Inject
+    MainPresenter presenter;
 
     private List<BaseFragment> mFragment;
     private ArrayList<CustomTabEntity> mTabEntitys;
@@ -55,8 +61,13 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        DaggerMainComponent.builder().mainModule(new MainModule(this))
+                .applicationComponent(((JellyApplicaiton) getApplication()).getApplicationComponent())
+                .build().inject(this);
         initView();
         initListener();
+        presenter.showToast();
+        //Disablea
     }
 
     private void initView() {

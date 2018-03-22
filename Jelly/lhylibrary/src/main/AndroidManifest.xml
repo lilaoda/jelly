@@ -5,9 +5,23 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
+
+        <!--1像素保活activity-->
         <activity
             android:name=".activity.ShowPhotoActivity"
             android:theme="@style/Transparent" />
+        <activity
+            android:name=".activity.OnePixelActivity"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="false"
+            android:launchMode="singleInstance"
+            android:theme="@style/Transparent" />
+        <!--<service-->
+        <!--android:name=".service.AliveService"-->
+        <!--android:process=":alive_service"/>-->
+        <service
+            android:name=".service.AliveService$InnerService"
+            android:process=":alive_service" />
     </application>
 
 </manifest>

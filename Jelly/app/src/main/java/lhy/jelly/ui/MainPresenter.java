@@ -1,7 +1,5 @@
 package lhy.jelly.ui;
 
-import com.orhanobut.logger.Logger;
-
 import javax.inject.Inject;
 
 import lhy.jelly.data.DbManager;
@@ -15,6 +13,7 @@ import lhy.jelly.data.remote.ApiService;
 public class MainPresenter {
 
     private MainActivity mainActivity;
+
     @Inject
     ApiService apiService;
     @Inject
@@ -26,7 +25,5 @@ public class MainPresenter {
     }
 
     public void showToast() {
-
-        Logger.d(apiService);
     }
 }

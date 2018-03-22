@@ -3,22 +3,19 @@ package lhy.lhylibrary.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import lhy.lhylibrary.base.BaseApplication;
+import lhy.lhylibrary.base.LhyApplication;
 
-/**
- * Created by lilaoda on 2016/10/24.
- */
+
 public class SPUtils {
 
     private static final String SP_FILE_NAME = "appConfig";
 
-    private static SharedPreferences getSP() {
-        return BaseApplication.getContext().getSharedPreferences(SP_FILE_NAME, Context.MODE_PRIVATE);
+    public static SharedPreferences getSP() {
+        return LhyApplication.getContext().getSharedPreferences(SP_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     public static boolean putString(String key, String value) {
-        boolean commit = getSP().edit().putString(key, value).commit();
-        return commit;
+        return getSP().edit().putString(key, value).commit();
     }
 
     public static String getString(String key) {

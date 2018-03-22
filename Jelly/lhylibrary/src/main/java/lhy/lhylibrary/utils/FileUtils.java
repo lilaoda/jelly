@@ -9,9 +9,7 @@ import android.text.format.Formatter;
 import java.io.File;
 import java.math.BigDecimal;
 
-/**
- * Created by Administrator on 2016/9/1.
- */
+
 public class FileUtils {
 
     private FileUtils() {

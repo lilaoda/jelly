@@ -27,6 +27,8 @@ public final class ApplicationModule {
 
     @Singleton
     @Provides
+   // @ForReleasableReferences(ActivityScoped.class)
+    //标记在activityScoped里该实例为弱引用，而不是强引用
     public Context provideContext() {
         return context;
     }

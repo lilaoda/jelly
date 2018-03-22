@@ -10,6 +10,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import lhy.jelly.bean.MusicBean;
+
 /**
  * Created by Liheyu on 2017/9/7.
  * Email:liheyu999@163.com
