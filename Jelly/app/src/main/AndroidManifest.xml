@@ -71,10 +71,10 @@
             android:name="com.netease.nimlib.service.NimService"
             android:process=":core"/>
 
-        <!-- 运行后台辅助服务 -->
-        <service
-            android:name="com.netease.nimlib.service.NimService$Aux"
-            android:process=":core"/>
+        <!--&lt;!&ndash; 运行后台辅助服务 &ndash;&gt;-->
+        <!--<service-->
+            <!--android:name="com.netease.nimlib.service.NimService$Aux"-->
+            <!--android:process=":core"/>-->
 
         <!-- 声明网易云通信后台辅助服务 -->
         <service

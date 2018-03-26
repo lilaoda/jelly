@@ -13,15 +13,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import lhy.jelly.R;
 import lhy.jelly.data.HttpManager;
-import lhy.lhylibrary.base.BaseActivity;
-import lhy.lhylibrary.http.HttpObserver;
+import lhy.lhylibrary.base.LhyActivity;
+import lhy.lhylibrary.http.SimpleObserver;
 
 /**
  * Created by Liheyu on 2017/9/7.
  * Email:liheyu999@163.com
  */
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends LhyActivity {
 
     @BindView(R.id.edit_account)
     EditText editAccount;
@@ -40,7 +40,7 @@ public class LoginActivity extends BaseActivity {
         HttpManager.getInstance().getApiService().getHello().subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.<JsonObject>bindToLifecycle())
-                .subscribe(new HttpObserver<JsonObject>() {
+                .subscribe(new SimpleObserver<JsonObject>() {
                     @Override
                     public void onSuccess(JsonObject value) {
 

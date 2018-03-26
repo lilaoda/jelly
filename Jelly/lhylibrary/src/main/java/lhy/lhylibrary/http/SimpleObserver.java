@@ -18,44 +18,46 @@ import lhy.lhylibrary.http.exception.ApiException;
 import retrofit2.HttpException;
 
 
-public abstract class ResultObserver<T> implements Observer<T> {
+public abstract class SimpleObserver<T> implements Observer<T> {
+
+    private  static  String TAG ="SimpleObserver.class";
 
     private Activity mActivity;
     private ProgressDialog progressDialog;
     private Disposable mDisposable;
-    private boolean isUserCancel = false;
     private String dialogMsg;
+    private boolean isUserCancel ;
     private boolean isShowToast;
     private boolean isShowDialog;
 
-    public ResultObserver() {
+    public SimpleObserver() {
     }
 
-    public ResultObserver(boolean isShowToast) {
+    public SimpleObserver(boolean isShowToast) {
         this.isShowToast = isShowToast;
     }
 
-    public ResultObserver(Activity mActivity, boolean isShowDialog, boolean isShowToast) {
+    public SimpleObserver(Activity mActivity, boolean isShowDialog, boolean isShowToast) {
         this.mActivity = mActivity;
         this.isShowToast = isShowToast;
         this.isShowDialog = isShowDialog;
     }
 
-    public ResultObserver(Activity mActivity, boolean isShowDialog, String dialogMsg, boolean isShowToast) {
+    public SimpleObserver(Activity mActivity, boolean isShowDialog, String dialogMsg, boolean isShowToast) {
         this.mActivity = mActivity;
         this.isShowToast = isShowToast;
         this.isShowDialog = isShowDialog;
         this.dialogMsg = dialogMsg;
     }
 
-    public ResultObserver(Activity mActivity, String dialogMsg, boolean isShowToast) {
+    public SimpleObserver(Activity mActivity, String dialogMsg, boolean isShowToast) {
         this.mActivity = mActivity;
         this.isShowToast = isShowToast;
         this.isShowDialog = true;
         this.dialogMsg = dialogMsg;
     }
 
-    public ResultObserver(Activity mActivity, String dialogMsg) {
+    public SimpleObserver(Activity mActivity, String dialogMsg) {
         this.mActivity = mActivity;
         this.isShowDialog = true;
         this.dialogMsg = dialogMsg;
@@ -116,7 +118,6 @@ public abstract class ResultObserver<T> implements Observer<T> {
         if (mActivity == null) {
             return;
         }
-
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(mActivity);
             progressDialog.setMessage(dialogMsg);
@@ -125,7 +126,7 @@ public abstract class ResultObserver<T> implements Observer<T> {
                 @Override
                 public void onCancel(DialogInterface dialog) {
                     //用户主动取消时调用
-                    Log.i("HttpObserver", "cancel");
+                    Log.i(TAG, "cancel");
                     isUserCancel = true;
                     mDisposable.dispose();
                 }

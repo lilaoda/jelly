@@ -3,25 +3,24 @@ package lhy.jelly;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
-import lhy.jelly.data.RepositoryModule;
-import lhy.lhylibrary.base.BaseApplication;
+import lhy.lhylibrary.base.LhyApplication;
 
 /**
  * Created by Liheyu on 2017/8/14.
  * Email:liheyu999@163.com
  */
 
-public class JellyApplicaiton extends BaseApplication {
+public class JellyApplicaiton extends LhyApplication {
 
     private ApplicationComponent applicationComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        applicationComponent = DaggerApplicationComponent.builder()
-                .repositoryModule(new RepositoryModule(this))
-                .applicationModule(new ApplicationModule(this))
-                .build();
+//        applicationComponent = DaggerApplicationComponent.builder()
+//                .repositoryModule(new RepositoryModule(this))
+//                .applicationModule(new ApplicationModule(this))
+//                .build();
     }
 
     @Override
