@@ -1,4 +1,4 @@
-package lhy.jelly.ui.fragment;
+package lhy.jelly.ui.video;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

@@ -12,24 +12,14 @@ import lhy.lhylibrary.base.LhyApplication;
 
 public class JellyApplicaiton extends LhyApplication {
 
-    private ApplicationComponent applicationComponent;
-
     @Override
     public void onCreate() {
         super.onCreate();
-//        applicationComponent = DaggerApplicationComponent.builder()
-//                .repositoryModule(new RepositoryModule(this))
-//                .applicationModule(new ApplicationModule(this))
-//                .build();
     }
 
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
-    }
-
-    public ApplicationComponent getApplicationComponent() {
-        return applicationComponent;
     }
 }

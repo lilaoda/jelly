@@ -1,4 +1,4 @@
-package lhy.jelly.ui.fragment;
+package lhy.jelly.ui.mine;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,12 +14,12 @@ import lhy.lhylibrary.base.LhyFragment;
  * Email:liheyu999@163.com
  */
 
-public class ToolFragment extends LhyFragment {
-    public static ToolFragment newInstance() {
+public class MineFragment extends LhyFragment {
+    public static MineFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        ToolFragment fragment = new ToolFragment();
+        MineFragment fragment = new MineFragment();
         fragment.setArguments(args);
         return fragment;
     }

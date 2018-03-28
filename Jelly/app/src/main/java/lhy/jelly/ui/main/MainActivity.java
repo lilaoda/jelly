@@ -1,4 +1,4 @@
-package lhy.jelly.ui;
+package lhy.jelly.ui.main;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,22 +15,24 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import lhy.jelly.JellyApplicaiton;
 import lhy.jelly.R;
 import lhy.jelly.bean.TabBean;
-import lhy.jelly.ui.fragment.ChatFragment;
-import lhy.jelly.ui.fragment.MusicFragment;
-import lhy.jelly.ui.fragment.ToolFragment;
-import lhy.jelly.ui.fragment.VideoFragment;
+import lhy.jelly.ui.chat.ChatFragment;
+import lhy.jelly.ui.mine.MineFragment;
+import lhy.jelly.ui.music.MusicFragment;
+import lhy.jelly.ui.video.VideoFragment;
 import lhy.lhylibrary.base.LhyActivity;
 import lhy.lhylibrary.base.LhyFragment;
 import lhy.lhylibrary.view.tablayout.CommonTabLayout;
 import lhy.lhylibrary.view.tablayout.listener.CustomTabEntity;
 import lhy.lhylibrary.view.tablayout.listener.OnTabSelectListener;
+
+/**
+ * Created by Lilaoda on 2018/3/28.
+ * Email:749948218@qq.com
+ */
 
 public class MainActivity extends LhyActivity {
 
@@ -42,9 +44,6 @@ public class MainActivity extends LhyActivity {
     DrawerLayout drawlayout;
     @BindView(R.id.tabLayout)
     CommonTabLayout tabLayout;
-
-    @Inject
-    MainPresenter presenter;
 
     private List<LhyFragment> mFragment;
     private ArrayList<CustomTabEntity> mTabEntitys;
@@ -61,13 +60,8 @@ public class MainActivity extends LhyActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        DaggerMainComponent.builder().mainModule(new MainModule(this))
-                .applicationComponent(((JellyApplicaiton) getApplication()).getApplicationComponent())
-                .build().inject(this);
         initView();
         initListener();
-        presenter.showToast();
-        //Disablea
     }
 
     private void initView() {
@@ -94,7 +88,7 @@ public class MainActivity extends LhyActivity {
         mFragment.add(MusicFragment.newInstance());
         mFragment.add(VideoFragment.newInstance());
         mFragment.add(ChatFragment.newInstance());
-        mFragment.add(ToolFragment.newInstance());
+        mFragment.add(MineFragment.newInstance());
         viewPager.setAdapter(new MainAdapter(getSupportFragmentManager(), mFragment));
 
         mTabEntitys = new ArrayList<>();
@@ -156,3 +150,4 @@ public class MainActivity extends LhyActivity {
     }
 
 }
+

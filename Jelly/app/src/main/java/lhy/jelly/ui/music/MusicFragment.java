@@ -1,4 +1,4 @@
-package lhy.jelly.ui.fragment;
+package lhy.jelly.ui.music;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;

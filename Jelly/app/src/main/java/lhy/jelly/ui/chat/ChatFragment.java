@@ -1,4 +1,4 @@
-package lhy.jelly.ui.fragment;
+package lhy.jelly.ui.chat;
 
 import android.app.Activity;
 import android.content.Intent;
