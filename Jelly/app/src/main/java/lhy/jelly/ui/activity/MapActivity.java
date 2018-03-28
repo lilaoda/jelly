@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import lhy.jelly.R;
-import lhy.lhylibrary.base.BaseActivity;
+import lhy.lhylibrary.base.LhyActivity;
 
 /**
  * Created by Liheyu on 2017/8/31.
@@ -28,7 +28,7 @@ import lhy.lhylibrary.base.BaseActivity;
  * 地图显示 点标记  实时定位
  */
 
-public class MapActivity extends BaseActivity implements AMapLocationListener {
+public class MapActivity extends LhyActivity implements AMapLocationListener {
 
     private MapView mapView;
     private AMap mAMap;

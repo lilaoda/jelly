@@ -32,7 +32,7 @@ import lhy.jelly.R;
 import lhy.jelly.adapter.MusicAdapter;
 import lhy.jelly.bean.MusicBean;
 import lhy.jelly.util.MusicUtils;
-import lhy.lhylibrary.base.BaseFragment;
+import lhy.lhylibrary.base.LhyFragment;
 import lhy.lhylibrary.utils.ToastUtils;
 
 /**
@@ -40,7 +40,7 @@ import lhy.lhylibrary.utils.ToastUtils;
  * Email:liheyu999@163.com
  */
 
-public class MusicFragment extends BaseFragment {
+public class MusicFragment extends LhyFragment {
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import lhy.jelly.R;
 import lhy.jelly.ui.activity.MapActivity;
 import lhy.lhylibrary.activity.ShowPhotoActivity;
-import lhy.lhylibrary.base.BaseFragment;
+import lhy.lhylibrary.base.LhyFragment;
 import me.nereo.multi_image_selector.MultiImageSelector;
 
 /**
@@ -22,7 +22,7 @@ import me.nereo.multi_image_selector.MultiImageSelector;
  * Email:liheyu999@163.com
  */
 
-public class ChatFragment extends BaseFragment {
+public class ChatFragment extends LhyFragment {
 
     private ArrayList<String> mPhotoList;
 

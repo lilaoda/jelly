@@ -26,13 +26,13 @@ import lhy.jelly.ui.fragment.ChatFragment;
 import lhy.jelly.ui.fragment.MusicFragment;
 import lhy.jelly.ui.fragment.ToolFragment;
 import lhy.jelly.ui.fragment.VideoFragment;
-import lhy.lhylibrary.base.BaseActivity;
-import lhy.lhylibrary.base.BaseFragment;
+import lhy.lhylibrary.base.LhyActivity;
+import lhy.lhylibrary.base.LhyFragment;
 import lhy.lhylibrary.view.tablayout.CommonTabLayout;
 import lhy.lhylibrary.view.tablayout.listener.CustomTabEntity;
 import lhy.lhylibrary.view.tablayout.listener.OnTabSelectListener;
 
-public class MainActivity extends BaseActivity  {
+public class MainActivity extends LhyActivity {
 
     @BindView(R.id.viewPager)
     ViewPager viewPager;
@@ -46,7 +46,7 @@ public class MainActivity extends BaseActivity  {
     @Inject
     MainPresenter presenter;
 
-    private List<BaseFragment> mFragment;
+    private List<LhyFragment> mFragment;
     private ArrayList<CustomTabEntity> mTabEntitys;
     private String[] mTitles = {"音乐", "视频", "社区", "工具"};
     private int[] mIconUnselectIds = {

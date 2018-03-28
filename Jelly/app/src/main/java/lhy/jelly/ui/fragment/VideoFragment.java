@@ -8,14 +8,14 @@ import android.view.ViewGroup;
 
 import lhy.ijkplayer.media.IjkVideoView;
 import lhy.jelly.R;
-import lhy.lhylibrary.base.BaseFragment;
+import lhy.lhylibrary.base.LhyFragment;
 
 /**
  * Created by Liheyu on 2017/8/21.
  * Email:liheyu999@163.com
  */
 
-public class VideoFragment extends BaseFragment {
+public class VideoFragment extends LhyFragment {
 
     private IjkVideoView mVideoView;
 

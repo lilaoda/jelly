@@ -7,14 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import lhy.jelly.R;
-import lhy.lhylibrary.base.BaseFragment;
+import lhy.lhylibrary.base.LhyFragment;
 
 /**
  * Created by Liheyu on 2017/8/21.
  * Email:liheyu999@163.com
  */
 
-public class ToolFragment extends BaseFragment {
+public class ToolFragment extends LhyFragment {
     public static ToolFragment newInstance() {
 
         Bundle args = new Bundle();
