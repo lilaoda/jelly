@@ -15,8 +15,13 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 import lhy.jelly.R;
 import lhy.jelly.bean.TabBean;
 import lhy.jelly.ui.chat.ChatFragment;
@@ -34,7 +39,10 @@ import lhy.lhylibrary.view.tablayout.listener.OnTabSelectListener;
  * Email:749948218@qq.com
  */
 
-public class MainActivity extends LhyActivity {
+public class MainActivity extends LhyActivity implements HasSupportFragmentInjector {
+
+    @Inject
+    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
 
     @BindView(R.id.viewPager)
     ViewPager viewPager;
@@ -126,6 +134,11 @@ public class MainActivity extends LhyActivity {
 
             }
         });
+    }
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return dispatchingAndroidInjector;
     }
 
 
