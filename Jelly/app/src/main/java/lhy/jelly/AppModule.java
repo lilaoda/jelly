@@ -13,9 +13,6 @@ import lhy.jelly.data.local.entity.User;
 
 @Module
 public class AppModule {
-
-    private User user;
-
     public AppModule() {
 
     }

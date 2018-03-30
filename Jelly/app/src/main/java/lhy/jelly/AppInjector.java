@@ -21,7 +21,7 @@ public class AppInjector {
     private AppInjector() {
     }
 
-    public static void init(Application application) {
+    public static void init(JellyApplicaiton application) {
         DaggerAppComponent.builder().application(application).build().inject(application);
         application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
@@ -62,20 +62,20 @@ public class AppInjector {
     }
 
     private static void handleActivity(Activity activity) {
-        if(activity instanceof HasSupportFragmentInjector){
+        if (activity instanceof HasSupportFragmentInjector) {
             AndroidInjection.inject(activity);
         }
-        if(activity instanceof FragmentActivity){
+        if (activity instanceof FragmentActivity) {
             ((FragmentActivity) activity).getSupportFragmentManager()
                     .registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
                         @Override
                         public void onFragmentCreated(FragmentManager fm, Fragment f, Bundle savedInstanceState) {
                             super.onFragmentCreated(fm, f, savedInstanceState);
-                            if(f instanceof Injectable){
+                            if (f instanceof Injectable) {
                                 AndroidSupportInjection.inject(f);
                             }
                         }
-                    },true);
+                    }, true);
         }
     }
 }

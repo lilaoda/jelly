@@ -1,7 +1,5 @@
 package lhy.jelly;
 
-import android.app.Application;
-
 import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
@@ -12,16 +10,17 @@ import dagger.android.AndroidInjectionModule;
  */
 
 @Component(modules = {AndroidInjectionModule.class,
-        AppModule.class
+        AppModule.class,
+        ActivityModule.class
 })
 public interface AppComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        Builder application(Application application);
+        Builder application(JellyApplicaiton application);
 
         AppComponent build();
     }
 
-    void inject(Application applicaiton);
+    void inject(JellyApplicaiton applicaiton);
 }

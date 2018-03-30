@@ -17,7 +17,6 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +27,7 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import lhy.jelly.Injectable;
 import lhy.jelly.R;
 import lhy.jelly.adapter.MusicAdapter;
 import lhy.jelly.bean.MusicBean;
@@ -40,7 +40,7 @@ import lhy.lhylibrary.utils.ToastUtils;
  * Email:liheyu999@163.com
  */
 
-public class MusicFragment extends LhyFragment {
+public class MusicFragment extends LhyFragment implements Injectable{
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -100,13 +100,9 @@ public class MusicFragment extends LhyFragment {
 
     private void initView() {
         mList = MusicUtils.getMp3Infos(getContext());
-        ArrayList<MusicBean> objects = new ArrayList<>(mList.size());
-        objects.addAll(mList);
-        mList.addAll(objects);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mMusicAdapter = new MusicAdapter(R.layout.item_music, mList);
         recyclerView.setAdapter(mMusicAdapter);
-        //  mMusicAdapter.disableLoadMoreIfNotFullPage(recyclerView);
         final View headView = View.inflate(getContext(), R.layout.head_view, null);
         final TextView textHead = (TextView) headView.findViewById(R.id.text_head);
 
@@ -180,25 +176,6 @@ public class MusicFragment extends LhyFragment {
             }
         });
         refreshLayout.autoRefresh();
-//        mMusicAdapter.setEnableLoadMore(true);
-//        mMusicAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
-//            @Override
-//            public void onLoadMoreRequested() {
-//                if (mList.size() > 40) {
-//                    mMusicAdapter.loadMoreEnd();
-//                } else {
-//                    Observable.timer(2000, TimeUnit.MILLISECONDS)
-//                            .observeOn(AndroidSchedulers.mainThread())
-//                            .subscribe(new Consumer<Long>() {
-//                                @Override
-//                                public void accept(@NonNull Long aLong) throws Exception {
-//                                    mMusicAdapter.notifyDataSetChanged();
-//                                    mMusicAdapter.loadMoreComplete();
-//                                }
-//                            });
-//                }
-//            }
-//        }, recyclerView);
     }
 
     @Override
