@@ -4,17 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.EditText;
 
-import com.google.gson.JsonObject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import lhy.jelly.R;
-import lhy.jelly.data.HttpManager;
 import lhy.lhylibrary.base.LhyActivity;
-import lhy.lhylibrary.http.SimpleObserver;
 
 /**
  * Created by Liheyu on 2017/9/7.
@@ -37,14 +31,5 @@ public class LoginActivity extends LhyActivity {
 
     @OnClick(R.id.btn_login)
     public void onViewClicked() {
-        HttpManager.getInstance().getApiService().getHello().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<JsonObject>bindToLifecycle())
-                .subscribe(new SimpleObserver<JsonObject>() {
-                    @Override
-                    public void onSuccess(JsonObject value) {
-
-                    }
-                });
     }
 }

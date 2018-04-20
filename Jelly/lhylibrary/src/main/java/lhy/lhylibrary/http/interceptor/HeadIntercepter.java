@@ -18,7 +18,7 @@ public class HeadIntercepter implements Interceptor {
         Request request = original
                 .newBuilder()
                 .addHeader("Content-Type", "application/json; charset=UTF-8") // application/x-www-form-urlencoded ; charset=UTF-8
-                .addHeader("Accept-Encoding", "gzip, deflate")
+//                .addHeader("Accept-Encoding", "gzip, deflate") OKHTTP默认可以解压缩，如果加上此句，不解压缩
                 .addHeader("Connection", "keep-alive")
                 .addHeader("Accept", "application/json")
                 .addHeader("token", "")

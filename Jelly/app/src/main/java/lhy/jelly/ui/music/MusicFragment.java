@@ -78,7 +78,7 @@ public class MusicFragment extends LhyFragment implements Injectable{
         mMusicAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                ToastUtils.showInt(position);
+                ToastUtils.showString(position+"");
                 // playMusic(position);
             }
         });

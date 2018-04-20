@@ -45,7 +45,6 @@ public class OkhttpManager {
                         .log(Platform.INFO)
                         .request("Request")
                         .response("Response")
-                        .addHeader("version", android.support.graphics.drawable.animated.BuildConfig.VERSION_NAME)
                         .build())
                 .connectionSpecs(Arrays.asList(ConnectionSpec.CLEARTEXT, ConnectionSpec.MODERN_TLS));//明文Http与比较新的Https
     }

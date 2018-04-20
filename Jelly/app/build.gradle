@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
-apply plugin: 'com.jakewharton.butterknife'
+//apply plugin: 'com.jakewharton.butterknife'
 
 android {
     signingConfigs {
@@ -11,12 +11,12 @@ android {
             keyAlias 'key_release'
         }
     }
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "lhy.jelly"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -61,37 +61,43 @@ android {
     }
 }
 
+repositories {
+    flatDir {
+        dirs 'libs'   // aar目录
+    }
+}
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    testCompile 'junit:junit:4.12'
-    compile 'org.greenrobot:greendao:3.2.2'
-    compile 'com.google.dagger:dagger:2.11'
-    compile 'com.google.dagger:dagger-android:2.11'
-    compile 'com.google.dagger:dagger-android-support:2.11'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    testImplementation 'junit:junit:4.12'
+    implementation 'org.greenrobot:greendao:3.2.2'
+    implementation 'com.google.dagger:dagger-android:2.11'
+    implementation 'com.google.dagger:dagger-android-support:2.11'
+    // if you use the support libraries
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
-    compile project(':zxinglibrary')
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.jakewharton:butterknife:8.8.1'
+    //一定要添加dagger2的annotationProcessor！
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     //     添加依赖。注意，版本号必须一致。
     //     基础功能 (必需)
-    compile 'com.netease.nimlib:basesdk:3.3.0'
+    implementation 'com.netease.nimlib:basesdk:3.3.0'
     // 音视频需要
-    compile 'com.netease.nimlib:avchat:3.3.0'
+    implementation 'com.netease.nimlib:avchat:3.3.0'
     // 聊天室需要
-    compile 'com.netease.nimlib:chatroom:3.3.0'
+    implementation 'com.netease.nimlib:chatroom:3.3.0'
     // 实时会话服务需要
-    compile 'com.netease.nimlib:rts:3.3.0'
+    implementation 'com.netease.nimlib:rts:3.3.0'
     // 全文检索服务需要
-    compile 'com.netease.nimlib:lucene:3.3.0'
-    compile files('libs/AMap3DMap_5.3.0_AMapNavi_5.3.0_AMapSearch_5.3.1_AMapLocation_3.5.0_20170817.jar')
-    compile 'com.android.support:multidex:1.0.0'
-    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
-    compile project(':ijkplayer')
-    compile project(':lhylibrary')
+    implementation 'com.netease.nimlib:lucene:3.3.0'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
+    implementation project(':ijkplayer')
+    implementation project(':zxinglibrary')
+    implementation project(':lhylibrary')
 }

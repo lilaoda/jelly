@@ -2,12 +2,21 @@ package lhy.jelly.ui.video;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import lhy.ijkplayer.media.IjkVideoView;
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import lhy.jelly.R;
+import lhy.jelly.adapter.VideoAdapter;
+import lhy.jelly.bean.VideoBean;
 import lhy.lhylibrary.base.LhyFragment;
 
 /**
@@ -17,7 +26,9 @@ import lhy.lhylibrary.base.LhyFragment;
 
 public class VideoFragment extends LhyFragment {
 
-    private IjkVideoView mVideoView;
+    @BindView(R.id.rlv_video)
+    RecyclerView rlvVideo;
+    Unbinder unbinder;
 
     public static VideoFragment newInstance() {
 
@@ -35,12 +46,24 @@ public class VideoFragment extends LhyFragment {
 
 //        IjkMediaPlayer.loadLibrariesOnce(null);
 //        IjkMediaPlayer.native_profileBegin("libijkffmpeg.so");
-
-        mVideoView = (IjkVideoView) rootView.findViewById(R.id.ijkView);
 //        Uri pathUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),"Kalimba.mp3"));
 //        Uri pathUri = Uri.parse("http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8");
 
+        unbinder = ButterKnife.bind(this, rootView);
+        initView();
         return rootView;
+    }
+
+    private void initView() {
+        List<VideoBean> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            VideoBean videoBean = new VideoBean();
+            videoBean.setTitle("title "+i);
+            videoBean.setVideoPath("");
+            list.add(videoBean);
+        }
+        rlvVideo.setLayoutManager(new LinearLayoutManager(getContext()));
+        rlvVideo.setAdapter(new VideoAdapter(list));
     }
 
     @Override
@@ -86,5 +109,11 @@ public class VideoFragment extends LhyFragment {
 //            mVideoView.enterBackground();
 //        }
 //        IjkMediaPlayer.native_profileEnd();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

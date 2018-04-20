@@ -12,6 +12,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.MenuItem;
 
+import com.orhanobut.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 import lhy.jelly.R;
 import lhy.jelly.bean.TabBean;
+import lhy.jelly.data.local.entity.User;
 import lhy.jelly.ui.chat.ChatFragment;
 import lhy.jelly.ui.mine.MineFragment;
 import lhy.jelly.ui.music.MusicFragment;
@@ -53,6 +56,9 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
     @BindView(R.id.tabLayout)
     CommonTabLayout tabLayout;
 
+    @Inject
+    User user;
+
     private List<LhyFragment> mFragment;
     private ArrayList<CustomTabEntity> mTabEntitys;
     private String[] mTitles = {"音乐", "视频", "社区", "工具"};
@@ -70,6 +76,7 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
         ButterKnife.bind(this);
         initView();
         initListener();
+        Logger.d(user);
     }
 
     private void initView() {

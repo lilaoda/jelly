@@ -3,11 +3,12 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:3.1.1'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
-        classpath 'com.jakewharton:butterknife-gradle-plugin:8.8.1'
+//        classpath 'com.jakewharton:butterknife-gradle-plugin:8.8.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -20,9 +21,20 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://maven.google.com" }
+        google()
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+subprojects {
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.android.support'
+                    && !details.requested.name.contains('multidex') ) {
+                details.useVersion "27.1.1"
+            }
+        }
+    }
 }

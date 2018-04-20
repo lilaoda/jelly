@@ -3,13 +3,18 @@ package lhy.lhylibrary.http;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.database.sqlite.SQLiteException;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.JsonParseException;
+
+
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -18,48 +23,39 @@ import lhy.lhylibrary.http.exception.ApiException;
 import retrofit2.HttpException;
 
 
-public abstract class SimpleObserver<T> implements Observer<T> {
+/**
+ * Created by Liheyu on 2017/3/13.
+ * Email:liheyu999@163.com
+ * <p>
+ * 订阅者
+ */
 
-    private  static  String TAG ="SimpleObserver.class";
+public abstract class RxObserver<T> implements Observer<T> {
+
+    private static String TAG = "HttpObserver.class";
 
     private Activity mActivity;
     private ProgressDialog progressDialog;
     private Disposable mDisposable;
     private String dialogMsg;
-    private boolean isUserCancel ;
+    private boolean isUserCancel;
     private boolean isShowToast;
-    private boolean isShowDialog;
 
-    public SimpleObserver() {
+    public RxObserver() {
     }
 
-    public SimpleObserver(boolean isShowToast) {
+    public RxObserver(boolean isShowToast) {
         this.isShowToast = isShowToast;
     }
 
-    public SimpleObserver(Activity mActivity, boolean isShowDialog, boolean isShowToast) {
+    public RxObserver(Activity mActivity, String dialogMsg) {
         this.mActivity = mActivity;
-        this.isShowToast = isShowToast;
-        this.isShowDialog = isShowDialog;
-    }
-
-    public SimpleObserver(Activity mActivity, boolean isShowDialog, String dialogMsg, boolean isShowToast) {
-        this.mActivity = mActivity;
-        this.isShowToast = isShowToast;
-        this.isShowDialog = isShowDialog;
         this.dialogMsg = dialogMsg;
     }
 
-    public SimpleObserver(Activity mActivity, String dialogMsg, boolean isShowToast) {
+    public RxObserver(Activity mActivity, String dialogMsg, boolean isShowToast) {
         this.mActivity = mActivity;
         this.isShowToast = isShowToast;
-        this.isShowDialog = true;
-        this.dialogMsg = dialogMsg;
-    }
-
-    public SimpleObserver(Activity mActivity, String dialogMsg) {
-        this.mActivity = mActivity;
-        this.isShowDialog = true;
         this.dialogMsg = dialogMsg;
     }
 
@@ -81,16 +77,22 @@ public abstract class SimpleObserver<T> implements Observer<T> {
         hideDialog();
 
         String errorMsg;
-        if (e instanceof IOException) {
-            errorMsg = "网络错误";
-        } else if (e instanceof HttpException) {
-            errorMsg = "网络错误";
-        } else if (e instanceof TimeoutException) {
+        if (e instanceof SocketTimeoutException) {
             errorMsg = "连接超时，请稍候再试";
+        } else if (e instanceof ConnectException) {
+            errorMsg = "连接错误，请检查网络";
+        } else if (e instanceof JsonParseException) {
+            errorMsg = "数据解析失败";
+        }  else if (e instanceof SQLiteException) {
+            errorMsg = "数据操作失败";
+        }else if (e instanceof HttpException) {
+            errorMsg = "网络错误";
+        } else if (e instanceof IOException) {
+            errorMsg = "网络错误";
         } else if (e instanceof ApiException) {
             errorMsg = e.getMessage();
         } else {
-            errorMsg = !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : "未知错误";
+            errorMsg = !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : "连接失败，请稍候再试";
         }
 
         //如果用户主动取消 则不提示任何信息
@@ -114,7 +116,6 @@ public abstract class SimpleObserver<T> implements Observer<T> {
     }
 
     private void showDialog() {
-        //如果未传activity就不显示对话框
         if (mActivity == null) {
             return;
         }
@@ -125,8 +126,7 @@ public abstract class SimpleObserver<T> implements Observer<T> {
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    //用户主动取消时调用
-                    Log.i(TAG, "cancel");
+                    Log.i(TAG, "user cancel");
                     isUserCancel = true;
                     mDisposable.dispose();
                 }
@@ -142,7 +142,7 @@ public abstract class SimpleObserver<T> implements Observer<T> {
         }
     }
 
-    public abstract void onSuccess(T value);
+    public  abstract void onSuccess(T value);
 
     public void onFailure(Throwable e) {
     }

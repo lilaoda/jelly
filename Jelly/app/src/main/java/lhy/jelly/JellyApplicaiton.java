@@ -23,13 +23,13 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
     @Override
     public void onCreate() {
         super.onCreate();
+        AppInjector.init(this);
     }
 
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
-        AppInjector.init(this);
     }
 
     @Override

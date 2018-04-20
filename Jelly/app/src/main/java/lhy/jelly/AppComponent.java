@@ -1,23 +1,30 @@
 package lhy.jelly;
 
+import android.app.Application;
+
+import javax.inject.Singleton;
+
 import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
+import dagger.android.support.AndroidSupportInjectionModule;
 
 /**
  * Created by Lilaoda on 2018/3/29.
  * Email:749948218@qq.com
  */
 
+@Singleton
 @Component(modules = {AndroidInjectionModule.class,
+        AndroidSupportInjectionModule.class,
         AppModule.class,
         ActivityModule.class
 })
-public interface AppComponent {
+public interface AppComponent{
     @Component.Builder
     interface Builder {
         @BindsInstance
-        Builder application(JellyApplicaiton application);
+        Builder application(Application application);
 
         AppComponent build();
     }

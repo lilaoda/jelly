@@ -11,11 +11,12 @@ import lhy.jelly.data.local.entity.User;
  * Email:749948218@qq.com
  */
 
+
 @Module
 public class AppModule {
-    public AppModule() {
-
-    }
+//    public AppModule() {
+//
+//    }
     //不加singleton不是单例
     @Singleton
     @Provides

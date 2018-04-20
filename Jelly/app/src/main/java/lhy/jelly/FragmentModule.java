@@ -3,6 +3,7 @@ package lhy.jelly;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 import lhy.jelly.ui.main.MainActivity;
+import lhy.jelly.ui.music.MusicFragment;
 
 /**
  * Created by Lilaoda on 2018/3/30.
@@ -10,8 +11,8 @@ import lhy.jelly.ui.main.MainActivity;
  */
 
 @Module
-public abstract class ActivityModule {
+public abstract class FragmentModule {
 
-    @ContributesAndroidInjector(modules = FragmentModule.class)
-    abstract MainActivity mainActivityInjector();
+    @ContributesAndroidInjector
+    abstract MusicFragment musicFragmentInjector();
 }

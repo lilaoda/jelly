@@ -12,7 +12,8 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v7.app.NotificationCompat;
+
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.liulishuo.filedownloader.BaseDownloadTask;
@@ -59,16 +60,20 @@ public class DownloadManager {
                 .setListener(new FileDownloadListener() {
                     @Override
                     protected void pending(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                        Log.d(TAG, "url:"+task.getUrl()+"\n"+"fileName:"+task.getFilename());
+                        Log.d(TAG, "pending: "+"大小："+FileUtils.getFormatSize(totalBytes));
                     }
 
                     @Override
                     protected void connected(BaseDownloadTask task, String etag, boolean isContinue, int soFarBytes, int totalBytes) {
+                        Log.d(TAG, "connected: "+totalBytes);
                     }
 
                     @Override
                     protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                        Log.d(TAG, "progress: "+soFarBytes +"总大小："+totalBytes);
                         Notification notification = mNotifyBuilder.setProgress(totalBytes, soFarBytes, false)
-                                .setContentInfo(String.valueOf(soFarBytes))
+                                .setContentInfo(FileUtils.getFormatSize(soFarBytes)+"/"+ soFarBytes/(float)totalBytes*10000/100+"%")
                                 .build();
                         mNotificationManager.notify(NOTIFY_ID, notification);
                     }
