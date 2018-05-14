@@ -15,6 +15,7 @@ public class MusicBean {
     private long size;
     private String url;
     private String album;
+    private String albumArt;
     private long album_id;
     private int isMusic;
 
@@ -94,6 +95,14 @@ public class MusicBean {
         this.isMusic = isMusic;
     }
 
+    public String getAlbumArt() {
+        return albumArt;
+    }
+
+    public void setAlbumArt(String albumArt) {
+        this.albumArt = albumArt;
+    }
+
     @Override
     public String toString() {
         return "MusicBean{" +
@@ -104,6 +113,7 @@ public class MusicBean {
                 ", size=" + size +
                 ", url='" + url + '\'' +
                 ", album='" + album + '\'' +
+                ", albumArt='" + albumArt + '\'' +
                 ", album_id=" + album_id +
                 ", isMusic=" + isMusic +
                 '}';

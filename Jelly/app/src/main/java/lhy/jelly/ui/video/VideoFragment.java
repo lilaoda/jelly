@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,9 @@ public class VideoFragment extends LhyFragment {
     @BindView(R.id.rlv_video)
     RecyclerView rlvVideo;
     Unbinder unbinder;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    private VideoAdapter mVideoAdapter;
 
     public static VideoFragment newInstance() {
 
@@ -42,7 +48,8 @@ public class VideoFragment extends LhyFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_video, null);
+        View rootView = inflater.inflate(R.layout.fragment_video, container, false);
+        Logger.d("onCreateView");
 
 //        IjkMediaPlayer.loadLibrariesOnce(null);
 //        IjkMediaPlayer.native_profileBegin("libijkffmpeg.so");
@@ -51,6 +58,7 @@ public class VideoFragment extends LhyFragment {
 
         unbinder = ButterKnife.bind(this, rootView);
         initView();
+        toolbar.setTitle("video");
         return rootView;
     }
 
@@ -58,12 +66,13 @@ public class VideoFragment extends LhyFragment {
         List<VideoBean> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             VideoBean videoBean = new VideoBean();
-            videoBean.setTitle("title "+i);
+            videoBean.setTitle("title " + i);
             videoBean.setVideoPath("");
             list.add(videoBean);
         }
         rlvVideo.setLayoutManager(new LinearLayoutManager(getContext()));
-        rlvVideo.setAdapter(new VideoAdapter(list));
+        mVideoAdapter = new VideoAdapter(list);
+        rlvVideo.setAdapter(mVideoAdapter);
     }
 
     @Override

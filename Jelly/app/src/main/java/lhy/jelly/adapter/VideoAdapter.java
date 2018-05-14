@@ -1,6 +1,7 @@
 package lhy.jelly.adapter;
 
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ public class VideoAdapter extends BaseQuickAdapter<VideoBean, VideoAdapter.Video
 
     @Override
     protected void convert(VideoHolder helper, VideoBean item) {
+        if(!TextUtils.isEmpty(item.getVideoPath()))
         helper.videoView.setVideoPath(item.getVideoPath());
         helper.textTitle.setText(item.getTitle());
     }

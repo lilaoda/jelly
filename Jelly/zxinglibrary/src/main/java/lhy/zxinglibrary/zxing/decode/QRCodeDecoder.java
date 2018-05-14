@@ -51,6 +51,8 @@ public class QRCodeDecoder {
         HINTS.put(DecodeHintType.POSSIBLE_FORMATS, allFormats);
         HINTS.put(DecodeHintType.CHARACTER_SET, "utf-8");
         HINTS.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+        HINTS.put(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
+
     }
 
     private QRCodeDecoder() {
@@ -101,6 +103,12 @@ public class QRCodeDecoder {
 
     public static String decodeQRCodeSync(final Bitmap bitmap) {
         try {
+//            LuminanceSource source1 = new PlanarYUVLuminanceSource(
+//                    rgb2YUV(bitmap), bitmap.getWidth(),
+//                    bitmap.getHeight(), 0, 0, bitmap.getWidth(), bitmap.getHeight(), false);
+//            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source1));
+//            Result decode = new MultiFormatReader().decode(binaryBitmap, HINTS);
+//            return decode.getText();
             int width = bitmap.getWidth();
             int height = bitmap.getHeight();
             int[] pixels = new int[width * height];

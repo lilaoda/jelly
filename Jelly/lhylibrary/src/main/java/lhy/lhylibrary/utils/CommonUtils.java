@@ -10,7 +10,6 @@ import android.support.annotation.StringRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -84,10 +83,6 @@ public class CommonUtils {
     }
 
     public static String getString(TextView v) {
-        return v.getText().toString().trim();
-    }
-
-    public static String getString(EditText v) {
         return v.getText().toString().trim();
     }
 

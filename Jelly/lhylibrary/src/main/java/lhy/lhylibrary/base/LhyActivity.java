@@ -14,7 +14,6 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import lhy.lhylibrary.R;
 import lhy.lhylibrary.utils.StatusBarUtil;
 
-
 public class LhyActivity extends RxAppCompatActivity {
 
     private static Handler handler;

@@ -54,6 +54,8 @@ public class DownloadManager {
         File file = new File(direcotryPath);
         if (!file.exists()) file.mkdirs();
         FileDownloader.getImpl().create(url)
+//                .addHeader("Content-Type","application/x-www-form-urlencoded")
+                //.addHeader("Content-Type","application/octet-stream")
                 .setPath(directoryPath, true)
                 .setForceReDownload(true)
                 .setCallbackProgressTimes(100)

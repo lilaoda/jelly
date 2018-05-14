@@ -4,9 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
@@ -15,7 +12,6 @@ import android.view.MenuItem;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -47,8 +43,6 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
     @Inject
     DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
 
-    @BindView(R.id.viewPager)
-    ViewPager viewPager;
     @BindView(R.id.navigationView)
     NavigationView navigationView;
     @BindView(R.id.drawlayout)
@@ -59,7 +53,7 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
     @Inject
     User user;
 
-    private List<LhyFragment> mFragment;
+    private ArrayList<Fragment> mFragment;
     private ArrayList<CustomTabEntity> mTabEntitys;
     private String[] mTitles = {"音乐", "视频", "社区", "工具"};
     private int[] mIconUnselectIds = {
@@ -89,7 +83,7 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.item1:
-                        drawlayout.openDrawer(Gravity.LEFT);
+                        drawlayout.openDrawer(Gravity.START);
                         break;
                     case R.id.item2:
                         drawlayout.closeDrawers();
@@ -104,20 +98,18 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
         mFragment.add(VideoFragment.newInstance());
         mFragment.add(ChatFragment.newInstance());
         mFragment.add(MineFragment.newInstance());
-        viewPager.setAdapter(new MainAdapter(getSupportFragmentManager(), mFragment));
 
         mTabEntitys = new ArrayList<>();
         for (int i = 0; i < mTitles.length; i++) {
             mTabEntitys.add(new TabBean(mTitles[i], mIconSelectIds[i], mIconUnselectIds[i]));
         }
-        tabLayout.setTabData(mTabEntitys);
+        tabLayout.setTabData(mTabEntitys,this,R.id.fl_content,mFragment);
     }
 
     private void initListener() {
         tabLayout.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelect(int position) {
-                viewPager.setCurrentItem(position);
             }
 
             @Override
@@ -125,49 +117,15 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
 
             }
         });
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
 
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                tabLayout.setCurrentTab(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+    private void navigateToFragment(LhyFragment fragment){
+//        getFragmentManager().beginTransaction().replace()
     }
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
         return dispatchingAndroidInjector;
     }
-
-
-    static class MainAdapter extends FragmentPagerAdapter {
-
-        private List mFragment;
-
-        public MainAdapter(FragmentManager fm, List mFragment) {
-            super(fm);
-            this.mFragment = mFragment;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return (Fragment) mFragment.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragment.size();
-        }
-    }
-
 }
 

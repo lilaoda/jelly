@@ -7,12 +7,11 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
-import com.orhanobut.logger.LogLevel;
-import com.orhanobut.logger.Logger;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+
+import lhy.lhylibrary.http.exception.AppCrashException;
 
 
 public class LhyApplication extends Application {
@@ -28,8 +27,7 @@ public class LhyApplication extends Application {
         super.onCreate();
         instance = this;
         context = getApplicationContext();
-        // AppCrashException.init();
-        initLogger();
+        AppCrashException.init();
     }
 
     public LhyActivity getCurrentActivity() {
@@ -37,13 +35,6 @@ public class LhyApplication extends Application {
         return activitys.get(activitys.size() - 1);
     }
 
-    private void initLogger() {
-        Logger.init()
-                .methodCount(5)
-//                .hideThreadInfo()
-                .logLevel(LogLevel.FULL)
-                .methodOffset(5);
-    }
 
     public void addActivity(LhyActivity activity) {
         activitys.add(activity);

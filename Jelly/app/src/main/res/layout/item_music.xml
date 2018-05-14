@@ -1,10 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <lhy.lhylibrary.view.roundImageView.RoundedImageView
+        android:id="@+id/img_music"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="5dp"
+        app:riv_corner_radius="5dp"
+        tools:src="@mipmap/test" />
 
     <TextView
         android:id="@+id/text_music_name"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/color_333"
+        app:layout_constraintLeft_toRightOf="@+id/img_music"
+        app:layout_constraintTop_toTopOf="@id/img_music"
+        tools:text="标题" />
+
+    <TextView
+        android:id="@+id/text_music_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/color_333"
+        app:layout_constraintBottom_toBottomOf="@id/img_music"
+        app:layout_constraintLeft_toRightOf="@+id/img_music"
+        tools:text="周杰伦" />
+
+    <ImageButton
+        android:id="@+id/ibt_music_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@drawable/ic_more_vert_black_24dp" />
+
+    <View
         android:layout_width="match_parent"
-        android:layout_height="50dp" />
-</LinearLayout>
+        android:layout_height="0.5dp"
+        android:background="@color/gray_light" />
+</android.support.constraint.ConstraintLayout>

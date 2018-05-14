@@ -16,4 +16,12 @@
         <item name="android:textColor">@drawable/tab_text_color</item>
         <item name="android:drawableTop">@drawable/tab_text_drawable</item>
     </style>
+
+    <style name="ActivityEnterAnim" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation"></item>
+        <item name="android:activityOpenExitAnimation"></item>
+        <item name="android:activityCloseEnterAnimation"></item>
+        <item name="android:activityCloseExitAnimation"></item>
+        <!--<item name="android:windowAllowEnterTransitionOverlap">true</item>-->
+    </style>
 </resources>

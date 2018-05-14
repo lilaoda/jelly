@@ -86,7 +86,7 @@ public abstract class RxObserver<T> implements Observer<T> {
         }  else if (e instanceof SQLiteException) {
             errorMsg = "数据操作失败";
         }else if (e instanceof HttpException) {
-            errorMsg = "网络错误";
+            errorMsg = "连接失败";
         } else if (e instanceof IOException) {
             errorMsg = "网络错误";
         } else if (e instanceof ApiException) {

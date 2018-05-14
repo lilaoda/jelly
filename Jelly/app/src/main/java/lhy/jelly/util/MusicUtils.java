@@ -3,6 +3,7 @@ package lhy.jelly.util;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -65,9 +66,23 @@ public class MusicUtils {
             mp3Info.setUrl(url);
             mp3Info.setAlbum(album);
             mp3Info.setAlbum_id(album_id);
+            mp3Info.setIsMusic(isMusic);
             mp3Infos.add(mp3Info);
-            Log.d("searchMusic", mp3Info.toString());
         }
         return mp3Infos;
+    }
+    private static String getAlbumArt(Context context,int album_id)
+
+    {
+        String mUriAlbums = "content://media/external/audio/albums";
+        String[] projection = new String[] { "album_art" };
+        Cursor cur = context.getContentResolver().query(  Uri.parse(mUriAlbums + "/" + Integer.toString(album_id)),  projection, null, null, null);
+        String album_art = null;
+        if (cur.getCount() > 0 && cur.getColumnCount() > 0)
+        {  cur.moveToNext();
+            album_art = cur.getString(0);
+        }
+        cur.close();
+        return album_art;
     }
 }
