@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -30,10 +32,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import lhy.jelly.Injectable;
 import lhy.jelly.R;
 import lhy.jelly.adapter.MusicAdapter;
 import lhy.jelly.bean.MusicBean;
+import lhy.jelly.data.local.entity.User;
+import lhy.jelly.di.Injectable;
 import lhy.jelly.util.MusicUtils;
 import lhy.lhylibrary.base.LhyFragment;
 import lhy.lhylibrary.utils.ToastUtils;
@@ -57,6 +60,9 @@ public class MusicFragment extends LhyFragment implements Injectable {
     private MusicAdapter mMusicAdapter;
     private MediaPlayer mMediaPlayer;
 
+    @Inject
+    User user;
+
     public static MusicFragment newInstance() {
         Bundle args = new Bundle();
         MusicFragment fragment = new MusicFragment();
@@ -73,6 +79,7 @@ public class MusicFragment extends LhyFragment implements Injectable {
         initView();
         toolbar.setTitle("music");
         initListener();
+        Logger.d(user);
         return view;
     }
 

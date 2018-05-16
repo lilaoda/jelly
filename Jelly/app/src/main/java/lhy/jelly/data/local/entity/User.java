@@ -1,8 +1,8 @@
 package lhy.jelly.data.local.entity;
 
+import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
 
 import lhy.jelly.data.local.gen.DaoSession;
 import lhy.jelly.data.local.gen.UserDao;

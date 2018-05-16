@@ -1,7 +1,8 @@
-package lhy.jelly;
+package lhy.jelly.di;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
+import lhy.jelly.ui.login.LoginActivity;
 import lhy.jelly.ui.main.MainActivity;
 
 /**
@@ -11,6 +12,9 @@ import lhy.jelly.ui.main.MainActivity;
 
 @Module
 public abstract class ActivityModule {
+
+    @ContributesAndroidInjector
+    abstract LoginActivity loginActivityInjector();
 
     @ContributesAndroidInjector(modules = FragmentModule.class)
     abstract MainActivity mainActivityInjector();

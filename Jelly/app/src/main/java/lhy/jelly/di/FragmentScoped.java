@@ -1,4 +1,4 @@
-package lhy.jelly;
+package lhy.jelly.di;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -13,5 +13,5 @@ import javax.inject.Scope;
 @Documented
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ActivityScoped {
+public @interface FragmentScoped {
 }

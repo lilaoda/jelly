@@ -1,8 +1,6 @@
 package lhy.lhylibrary.http;
 
 
-import com.ihsanbal.logging.LoggingInterceptor;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +17,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import okhttp3.internal.platform.Platform;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * OkHttp管理类，可添加缓存，添加公共请求参数
@@ -33,19 +31,21 @@ public class OkhttpManager {
     private static final int READTIMEOUT = 10000;
 
     private OkhttpManager() {
+
         mOkHttpBuilder = new OkHttpClient.Builder()
                 .connectTimeout(CONNECTIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(READTIMEOUT, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(new HeadIntercepter())
-                .addInterceptor(new LoggingInterceptor.Builder()
-                        .loggable(true)
-//                        .loggable(BuildConfig.DEBUG)
-                        .setLevel(com.ihsanbal.logging.Level.BASIC)
-                        .log(Platform.INFO)
-                        .request("Request")
-                        .response("Response")
-                        .build())
+                .addInterceptor( new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+//                .addInterceptor(new LoggingInterceptor.Builder()
+//                        .loggable(true)
+////                        .loggable(BuildConfig.DEBUG)
+//                        .setLevel(com.ihsanbal.logging.Level.BASIC)
+//                        .log(Platform.INFO)
+//                        .request("Request")
+//                        .response("Response")
+//                        .build())
                 .connectionSpecs(Arrays.asList(ConnectionSpec.CLEARTEXT, ConnectionSpec.MODERN_TLS));//明文Http与比较新的Https
     }
 

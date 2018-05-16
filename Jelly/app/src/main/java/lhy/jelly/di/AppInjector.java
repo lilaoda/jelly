@@ -1,4 +1,4 @@
-package lhy.jelly;
+package lhy.jelly.di;
 
 import android.app.Activity;
 import android.app.Application;
@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import dagger.android.AndroidInjection;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.HasSupportFragmentInjector;
+import lhy.jelly.base.JellyApplicaiton;
 
 /**
  * Created by Lilaoda on 2018/3/29.

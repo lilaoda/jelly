@@ -1,4 +1,4 @@
-package lhy.jelly;
+package lhy.jelly.di;
 
 /**
  * Created by Lilaoda on 2018/3/29.

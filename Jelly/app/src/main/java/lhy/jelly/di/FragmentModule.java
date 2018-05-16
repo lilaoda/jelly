@@ -1,4 +1,4 @@
-package lhy.jelly;
+package lhy.jelly.di;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

@@ -1,4 +1,4 @@
-package lhy.jelly;
+package lhy.jelly.base;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +15,8 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
+import lhy.jelly.BuildConfig;
+import lhy.jelly.di.AppInjector;
 import lhy.lhylibrary.base.LhyApplication;
 
 /**
@@ -26,6 +28,7 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
 
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -59,4 +62,5 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
     public AndroidInjector<Activity> activityInjector() {
         return dispatchingAndroidInjector;
     }
+
 }

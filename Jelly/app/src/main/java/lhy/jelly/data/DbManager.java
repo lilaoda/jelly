@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import lhy.jelly.data.local.gen.DaoMaster;
 import lhy.jelly.data.local.gen.DaoSession;
+import lhy.jelly.data.local.gen.UserDao;
 
 /**
  * Created by Liheyu on 2017/8/15.
@@ -16,6 +17,7 @@ public class DbManager {
 
     private static final String DB_NAME = "jelly.db";
     private static DbManager instance;
+    private DaoSession mDaoSession;
 
 
     private DbManager(Context context) {
@@ -37,6 +39,10 @@ public class DbManager {
         DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(context, DB_NAME);
         SQLiteDatabase database = devOpenHelper.getWritableDatabase();
         DaoMaster daoMaster = new DaoMaster(database);
-        DaoSession daoSession = daoMaster.newSession();
+        mDaoSession = daoMaster.newSession();
+    }
+
+    public UserDao getUserDao() {
+        return mDaoSession.getUserDao();
     }
 }

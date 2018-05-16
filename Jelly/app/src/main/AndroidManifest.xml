@@ -33,7 +33,7 @@
     <uses-permission android:name="lhy.jelly.permission.RECEIVE_MSG"/>
 
     <application
-        android:name=".JellyApplicaiton"
+        android:name=".base.JellyApplicaiton"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -107,6 +107,8 @@
             android:name="com.netease.cosine.core.CosineService"
             android:process=":cosine">
         </service>
+
+        <service android:name=".service.UserService"/>
 
         <receiver
             android:name="com.netease.cosine.target.CosineReceiver"
