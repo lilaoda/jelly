@@ -53,7 +53,8 @@ public class NetworkUtls {
     public static boolean isConnceted(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.getState().equals(NetworkInfo.State.CONNECTED);
+//        return networkInfo != null && networkInfo.getState().equals(NetworkInfo.State.CONNECTED);
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     /**

@@ -4,6 +4,7 @@ import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 import lhy.jelly.ui.login.LoginActivity;
 import lhy.jelly.ui.main.MainActivity;
+import lhy.jelly.ui.music.MusicPlayActivity;
 
 /**
  * Created by Lilaoda on 2018/3/30.
@@ -18,4 +19,7 @@ public abstract class ActivityModule {
 
     @ContributesAndroidInjector(modules = FragmentModule.class)
     abstract MainActivity mainActivityInjector();
+
+    @ContributesAndroidInjector
+    abstract MusicPlayActivity musicPlayActivityInjector();
 }

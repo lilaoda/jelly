@@ -21,6 +21,7 @@ android {
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        flavorDimensions "versionCode"
     }
     buildTypes {
         release {
@@ -42,6 +43,30 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     productFlavors {
+            tencent {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "tencent"]
+            }
+            xiaomi {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "xiaomi"]
+            }
+            huawei {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "huawei"]
+            }
+            baidu {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
+            }
+            wandoujia {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia"]
+            }
+            qihu360 {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "360"]
+            }
+            meizhu {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "meizhu"]
+            }
+            vivo {
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "vivo"]
+            }
     }
     sourceSets {
         main {
@@ -90,21 +115,33 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.jakewharton:butterknife:8.8.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.0'
-    //     添加依赖。注意，版本号必须一致。
-    //     基础功能 (必需)
-    implementation 'com.netease.nimlib:basesdk:3.3.0'
+    // 基础功能 (必需)
+    implementation 'com.netease.nimlib:basesdk:5.1.0'
+    // 音视频和互动白板服务需要
+    implementation 'com.netease.nimlib:nrtc:5.1.0'
     // 音视频需要
-    implementation 'com.netease.nimlib:avchat:3.3.0'
+    implementation 'com.netease.nimlib:avchat:5.1.0'
     // 聊天室需要
-    implementation 'com.netease.nimlib:chatroom:3.3.0'
-    // 实时会话服务需要
-    implementation 'com.netease.nimlib:rts:3.3.0'
+    implementation 'com.netease.nimlib:chatroom:5.1.0'
+    // 互动白板服务需要
+    implementation 'com.netease.nimlib:rts:5.1.0'
     // 全文检索服务需要
-    implementation 'com.netease.nimlib:lucene:3.3.0'
+    implementation 'com.netease.nimlib:lucene:5.1.0'
+    // 小米、华为、魅族、fcm 推送
+    implementation 'com.netease.nimlib:push:5.1.0'
+
     implementation 'com.android.support:multidex:1.0.3'
 
     implementation project(':ijkplayer')
     implementation project(':zxinglibrary')
     implementation project(':lhylibrary')
 //    implementation "android.arch.lifecycle:runtime:1.1.1"
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+    //组件化基础库
+    api 'com.umeng.sdk:common:1.5.0'
+    api 'com.umeng.sdk:utdid:1.1.5.3'
+    //在App上线前请务必删除集成调试库，避免无关信息的打印。
+    api 'com.umeng.sdk:debug:1.0.0'
+    //PushSDK
+    api 'com.umeng.sdk:push:4.1.0'
 }

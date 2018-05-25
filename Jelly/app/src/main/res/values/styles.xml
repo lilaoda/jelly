@@ -16,12 +16,29 @@
         <item name="android:textColor">@drawable/tab_text_color</item>
         <item name="android:drawableTop">@drawable/tab_text_drawable</item>
     </style>
-
-    <style name="ActivityEnterAnim" parent="@android:style/Animation.Activity">
-        <item name="android:activityOpenEnterAnimation"></item>
-        <item name="android:activityOpenExitAnimation"></item>
-        <item name="android:activityCloseEnterAnimation"></item>
-        <item name="android:activityCloseExitAnimation"></item>
-        <!--<item name="android:windowAllowEnterTransitionOverlap">true</item>-->
+    <style name="TransitionsTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="android:windowContentTransitions">true</item>-->
     </style>
+    <!--<style name="ActivityEnterAnim" parent="@android:style/Animation.Activity">-->
+    <!--<item name="android:activityOpenEnterAnimation"></item>-->
+    <!--<item name="android:activityOpenExitAnimation"></item>-->
+    <!--<item name="android:activityCloseEnterAnimation"></item>-->
+    <!--<item name="android:activityCloseExitAnimation"></item>-->
+    <!--&lt;!&ndash;<item name="android:windowAllowEnterTransitionOverlap">true</item>&ndash;&gt;-->
+    <!--</style>-->
+    <!--<style name="MaterialAnimations" parent="@style/Theme.AppCompat.Light.NoActionBar">-->
+        <!--...-->
+        <!--&lt;!&ndash; specify enter and exit transitions &ndash;&gt;-->
+        <!--<item name="android:windowEnterTransition">@transition/explode</item>-->
+        <!--<item name="android:windowExitTransition">@transition/explode</item>-->
+
+        <!--&lt;!&ndash; specify shared element transitions &ndash;&gt;-->
+        <!--<item name="android:windowSharedElementEnterTransition">@transition/changebounds</item>-->
+        <!--<item name="android:windowSharedElementExitTransition">@transition/changebounds</item>-->
+        <!--...-->
+    <!--</style>-->
 </resources>

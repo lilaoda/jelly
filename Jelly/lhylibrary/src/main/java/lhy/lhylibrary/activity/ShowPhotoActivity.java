@@ -48,7 +48,6 @@ public class ShowPhotoActivity extends LhyActivity {
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
         StatusBarUtil.setColor(this, Color.BLACK);
-
         initData();
         initView();
     }

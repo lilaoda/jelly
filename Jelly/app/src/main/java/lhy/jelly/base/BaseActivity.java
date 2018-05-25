@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.umeng.message.PushAgent;
+
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
@@ -29,6 +31,12 @@ public abstract class BaseActivity extends LhyActivity implements HasFragmentInj
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
+        initUpush();
+    }
+
+    //统计应用启动数据
+    private void initUpush() {
+        PushAgent.getInstance(this).onAppStart();
     }
 
     public AndroidInjector<android.app.Fragment> fragmentInjector() {

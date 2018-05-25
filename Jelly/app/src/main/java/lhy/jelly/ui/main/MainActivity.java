@@ -1,11 +1,16 @@
 package lhy.jelly.ui.main;
 
+import android.annotation.TargetApi;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.MenuItem;
 
@@ -17,17 +22,14 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
 import lhy.jelly.R;
+import lhy.jelly.base.BaseActivity;
 import lhy.jelly.bean.TabBean;
 import lhy.jelly.data.local.entity.User;
 import lhy.jelly.ui.chat.ChatFragment;
 import lhy.jelly.ui.mine.MineFragment;
 import lhy.jelly.ui.music.MusicFragment;
 import lhy.jelly.ui.video.VideoFragment;
-import lhy.lhylibrary.base.LhyActivity;
 import lhy.lhylibrary.base.LhyFragment;
 import lhy.lhylibrary.view.tablayout.CommonTabLayout;
 import lhy.lhylibrary.view.tablayout.listener.CustomTabEntity;
@@ -38,10 +40,7 @@ import lhy.lhylibrary.view.tablayout.listener.OnTabSelectListener;
  * Email:749948218@qq.com
  */
 
-public class MainActivity extends LhyActivity implements HasSupportFragmentInjector {
-
-    @Inject
-    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
+public class MainActivity extends BaseActivity  {
 
     @BindView(R.id.navigationView)
     NavigationView navigationView;
@@ -68,10 +67,43 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        setupWindowAnimations();
         initView();
         initListener();
         Logger.d(user);
     }
+
+    @TargetApi(value = 21)
+    //上一页面启动时以动画形式启动才有效果
+    private void setupWindowAnimations() {
+//        (1)setExitTransition() - 当A start B时，使A中的View退出场景的transition
+//                (2)setEnterTransition() - 当A start B时，使B中的View进入场景的transition
+//                (3)setReturnTransition() - 当B 返回 A时，使B中的View退出场景的transition
+////                (4)setReenterTransition() - 当B 返回 A时，使A中的View进入场景的transition
+        Slide slide = new Slide();
+        slide.setSlideEdge(Gravity.LEFT);
+        slide.setDuration(1000);
+//        getWindow().setEnterTransition(slide);
+//        getWindow().setReturnTransition(slide);
+
+        Explode explode = new Explode();
+        explode.setDuration(1000);
+//        explode.setMode(Explode.MODE_OUT);//系统默认进去时IN 出去时OUT.其它slide fade也是一样的
+//        getWindow().setEnterTransition(explode);
+//        getWindow().setReturnTransition(explode);
+
+        Fade fade = new Fade();
+        fade.setDuration(1000);
+        getWindow().setEnterTransition(fade);
+        getWindow().setReturnTransition(fade);
+
+        TransitionSet transitionSet = new TransitionSet();
+//        transitionSet.addTransition(slide);
+//        transitionSet.addTransition(explode);
+//        getWindow().setEnterTransition(transitionSet);
+//        getWindow().setReturnTransition(transitionSet);
+    }
+
 
     private void initView() {
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawlayout, R.string.draw_open, R.string.draw_close);
@@ -103,7 +135,7 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
         for (int i = 0; i < mTitles.length; i++) {
             mTabEntitys.add(new TabBean(mTitles[i], mIconSelectIds[i], mIconUnselectIds[i]));
         }
-        tabLayout.setTabData(mTabEntitys,this,R.id.fl_content,mFragment);
+        tabLayout.setTabData(mTabEntitys, this, R.id.fl_content, mFragment);
     }
 
     private void initListener() {
@@ -119,13 +151,9 @@ public class MainActivity extends LhyActivity implements HasSupportFragmentInjec
         });
     }
 
-    private void navigateToFragment(LhyFragment fragment){
+    private void navigateToFragment(LhyFragment fragment) {
 //        getFragmentManager().beginTransaction().replace()
     }
 
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return dispatchingAndroidInjector;
-    }
 }
 

@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import lhy.lhylibrary.view.roundImageView.RoundedImageView;
 
 public class MusicAdapter extends BaseItemDraggableAdapter<MusicBean, MusicAdapter.MusicHolder> {
 
+    public static final int[] mImgArray = {R.mipmap.test1, R.mipmap.test2, R.mipmap.test3, R.mipmap.test4, R.mipmap.test5};
 
     public MusicAdapter(@Nullable List<MusicBean> data) {
         super(R.layout.item_music, data);
@@ -31,9 +33,11 @@ public class MusicAdapter extends BaseItemDraggableAdapter<MusicBean, MusicAdapt
 
     @Override
     protected void convert(MusicHolder helper, MusicBean item) {
+        int layoutPosition = helper.getLayoutPosition();
+        Logger.d(layoutPosition);
         helper.textMusicArtist.setText(item.getArtist());
         helper.textMusicName.setText(item.getTitle());
-        Glide.with(helper.imgMusic).load(item.getAlbum()).into(helper.imgMusic);
+        Glide.with(helper.imgMusic).load(mImgArray[layoutPosition % 5]).into(helper.imgMusic);
 //        Glide.with(helper.imgMusic).load(item.getUrl()).into(helper.imgMusic);
     }
 
