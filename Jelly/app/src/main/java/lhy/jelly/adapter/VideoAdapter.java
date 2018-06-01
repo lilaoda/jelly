@@ -1,9 +1,7 @@
 package lhy.jelly.adapter;
 
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -12,10 +10,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import lhy.ijkplayer.media.IjkVideoView;
 import lhy.jelly.R;
 import lhy.jelly.bean.VideoBean;
+import lhy.jelly.view.VideoView;
 
 /**
  * Created by Lihy on 2018/4/20 14:58
@@ -27,37 +24,20 @@ public class VideoAdapter extends BaseQuickAdapter<VideoBean, VideoAdapter.Video
         super(R.layout.item_video, data);
     }
 
+    //"duration":5667,"path":"/storage/emulated/0/Wildlife.mp4"
     @Override
-    protected void convert(VideoHolder helper, VideoBean item) {
-        if(!TextUtils.isEmpty(item.getVideoPath()))
-        helper.videoView.setVideoPath(item.getVideoPath());
-        helper.textTitle.setText(item.getTitle());
+    protected void convert(final VideoHolder helper, VideoBean item) {
+        helper.videoView.setVideoPath(item.getPath());
     }
 
     public static class VideoHolder extends BaseViewHolder {
 
         @BindView(R.id.video_view)
-        IjkVideoView videoView;
-        @BindView(R.id.text_title)
-        TextView textTitle;
-
+        VideoView videoView;
 
         public VideoHolder(View view) {
             super(view);
-            ButterKnife.bind(this,view);
+            ButterKnife.bind(this, view);
         }
-
-        @OnClick({R.id.btn_start, R.id.btn_pause})
-        public void onViewClicked(View view) {
-            switch (view.getId()) {
-                case R.id.btn_start:
-                    if(!videoView.isPlaying())videoView.start();
-                    break;
-                case R.id.btn_pause:
-                    if(videoView.isPlaying())videoView.pause();
-                    break;
-            }
-        }
-
     }
 }

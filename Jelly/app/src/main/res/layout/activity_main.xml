@@ -25,6 +25,7 @@
             android:background="#cfcdcd" />
 
         <lhy.lhylibrary.view.tablayout.CommonTabLayout
+            android:alpha="100"
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="50dp"

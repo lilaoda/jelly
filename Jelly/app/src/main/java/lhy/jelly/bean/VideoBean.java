@@ -6,8 +6,18 @@ package lhy.jelly.bean;
  */
 public class VideoBean {
 
-    private String videoPath;
+    private String path;
     private String title;
+    private long duration;
+    private String thumbPath;
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public String getTitle() {
         return title;
@@ -17,11 +27,29 @@ public class VideoBean {
         this.title = title;
     }
 
-    public String getVideoPath() {
-        return videoPath;
+    public long getDuration() {
+        return duration;
     }
 
-    public void setVideoPath(String videoPath) {
-        this.videoPath = videoPath;
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public String getThumbPath() {
+        return thumbPath;
+    }
+
+    public void setThumbPath(String thumbPath) {
+        this.thumbPath = thumbPath;
+    }
+
+    @Override
+    public String toString() {
+        return "VideoBean{" +
+                "path='" + path + '\'' +
+                ", title='" + title + '\'' +
+                ", duration=" + duration +
+                ", thumbPath='" + thumbPath + '\'' +
+                '}';
     }
 }

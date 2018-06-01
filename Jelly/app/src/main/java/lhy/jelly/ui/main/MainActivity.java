@@ -1,6 +1,7 @@
 package lhy.jelly.ui.main;
 
 import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -67,7 +68,9 @@ public class MainActivity extends BaseActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setupWindowAnimations();
+        if(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP){
+            setupWindowAnimations();
+        }
         initView();
         initListener();
         Logger.d(user);

@@ -32,7 +32,7 @@ import retrofit2.HttpException;
 
 public abstract class RxObserver<T> implements Observer<T> {
 
-    private static String TAG = "HttpObserver.class";
+    private static String TAG = "RxObserver.class";
 
     private Activity mActivity;
     private ProgressDialog progressDialog;
