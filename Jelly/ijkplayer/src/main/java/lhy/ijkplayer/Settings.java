@@ -28,7 +28,7 @@ public class Settings {
     public static final int PV_PLAYER__Auto = 0;
     public static final int PV_PLAYER__AndroidMediaPlayer = 1;
     public static final int PV_PLAYER__IjkMediaPlayer = 2;
-//    public static final int PV_PLAYER__IjkExoMediaPlayer = 3;
+    public static final int PV_PLAYER__IjkExoMediaPlayer = 3;
 
     public Settings(Context context) {
         mAppContext = context.getApplicationContext();

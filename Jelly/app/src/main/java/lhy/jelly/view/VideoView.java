@@ -1,9 +1,15 @@
 package lhy.jelly.view;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,24 +18,26 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.orhanobut.logger.Logger;
+
 import java.util.Formatter;
 import java.util.Locale;
 
-import lhy.ijkplayer.media.IMediaController;
+import lhy.ijkplayer.media.IRenderView;
 import lhy.ijkplayer.media.IjkVideoView;
 import lhy.jelly.R;
+import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 /**
  * Created by Lihy on 2018/6/1 14:02
  * E-Mail ：liheyu999@163.com
  */
-public class VideoView extends FrameLayout implements IMediaController {
+public class VideoView extends FrameLayout implements View.OnClickListener {
 
     //播放指示器默认显示时间
     private static final int mDefaultTimeout = 3000;
@@ -39,7 +47,6 @@ public class VideoView extends FrameLayout implements IMediaController {
     private final Formatter mFormatter;
     private final WindowManager mWindowManager;
 
-    private IjkVideoView ijkView;
     private ImageView ivThumb;
     private TextView textCurrentTime;
     private SeekBar seekBar;
@@ -48,15 +55,13 @@ public class VideoView extends FrameLayout implements IMediaController {
     private ImageView pauseButton;
     private LinearLayout llIndicator;
     private RelativeLayout uiController;
-    private MediaController.MediaPlayerControl mPlayer;
+    private IjkVideoView ijkVideo;
 
     //seekBar正在拖动
     private boolean mDragging;
     //播放指示器是否正在显示
     private boolean mShowing;
-    private View mAnchor;
-    private View mRoot;
-
+    private ProgressBar loadingProgress;
 
     public VideoView(@NonNull Context context) {
         this(context, null);
@@ -72,35 +77,52 @@ public class VideoView extends FrameLayout implements IMediaController {
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        initControllerView();
     }
 
-    /**
-     * Create the view that holds the widgets that control playback.
-     * Derived classes can override this to create their own.
-     *
-     * @return The controller view.
-     * @hide This doesn't work as advertised
-     */
-    protected View makeControllerView() {
+    private void initControllerView() {
+        setBackgroundColor(Color.BLACK);
         LayoutInflater inflate = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mRoot = inflate.inflate(R.layout.view_video, null);
-        initControllerView(mRoot);
-        return mRoot;
-    }
-
-    private void initControllerView(View view) {
-        ijkView = view.findViewById(R.id.ijk_view);
+        View view = inflate.inflate(R.layout.view_video, this);
+        ijkVideo = view.findViewById(R.id.ijk_view);
         ivThumb = view.findViewById(R.id.iv_thumb);
         textCurrentTime = view.findViewById(R.id.text_current_time);
         seekBar = view.findViewById(R.id.sb_progress);
         textTotalTime = view.findViewById(R.id.text_total_time);
-        fullScreenButton = view.findViewById(R.id.iv_full_screen);
+        fullScreenButton = view.findViewById(R.id.ib_full_screen);
         llIndicator = view.findViewById(R.id.ll_indicator);
         uiController = view.findViewById(R.id.play_ui);
-        pauseButton = view.findViewById(R.id.iv_play);
+        pauseButton = view.findViewById(R.id.ib_pause);
+        loadingProgress = view.findViewById(R.id.loading);
+
         seekBar.setOnSeekBarChangeListener(mSeekListener);
         seekBar.setMax(1000);
-        pauseButton.setOnClickListener(mPauseListener);
+        pauseButton.setOnClickListener(this);
+        fullScreenButton.setOnClickListener(this);
+        ijkVideo.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(IMediaPlayer iMediaPlayer) {
+                loadingProgress.setVisibility(GONE);
+            }
+        });
+        ijkVideo.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
+                return false;
+            }
+        });
+        ijkVideo.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(IMediaPlayer iMediaPlayer, int i, int i1) {
+                return false;
+            }
+        });
+        ijkVideo.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(IMediaPlayer iMediaPlayer) {
+
+            }
+        });
     }
 
 
@@ -121,18 +143,18 @@ public class VideoView extends FrameLayout implements IMediaController {
 
     //设置seekbar的进度，并更新当前时间与总时间
     private int setProgress() {
-        if (mPlayer == null || mDragging) {
+        if (ijkVideo == null || mDragging) {
             return 0;
         }
-        int position = mPlayer.getCurrentPosition();
-        int duration = mPlayer.getDuration();
+        int position = ijkVideo.getCurrentPosition();
+        int duration = ijkVideo.getDuration();
 
         if (duration > 0) {
             // use long to avoid overflow
             long pos = 1000L * position / duration;
             seekBar.setProgress((int) pos);
 
-            int percent = mPlayer.getBufferPercentage();
+            int percent = ijkVideo.getBufferPercentage();
             seekBar.setSecondaryProgress(percent * 10);
         }
 
@@ -142,7 +164,6 @@ public class VideoView extends FrameLayout implements IMediaController {
         return position;
     }
 
-    @Override
     public void show(int timeout) {
         if (!mShowing) {
             uiController.setVisibility(VISIBLE);
@@ -170,71 +191,17 @@ public class VideoView extends FrameLayout implements IMediaController {
         super.setEnabled(enabled);
     }
 
-    @Override
     public void show() {
         show(mDefaultTimeout);
     }
 
-    private ArrayList<View> mShowOnceArray = new ArrayList<View>();
-
-    @Override
-    public void showOnce(View view) {
-        mShowOnceArray.add(view);
-        view.setVisibility(View.VISIBLE);
-        show();
-    }
-
     //隐藏指示器
-    @Override
     public void hide() {
         if (mShowing) {
             uiController.setVisibility(GONE);
             removeCallbacks(mShowProgress);
             mShowing = false;
         }
-        for (View view : mShowOnceArray)
-            view.setVisibility(View.GONE);
-        mShowOnceArray.clear();
-    }
-
-    @Override
-    public boolean isShowing() {
-        return mShowing;
-    }
-
-
-    /**
-     * Set the view that acts as the anchor for the control view.
-     * This can for example be a VideoView, or your Activity's main view.
-     * When VideoView calls this method, it will use the VideoView's parent
-     * as the anchor.
-     *
-     * @param view The view to which to anchor the controller when it is visible.
-     */
-    //被使用者调用
-    @Override
-    public void setAnchorView(View view) {
-        if (mAnchor != null) {
-            mAnchor.removeOnLayoutChangeListener(mLayoutChangeListener);
-        }
-        mAnchor = view;
-        if (mAnchor != null) {
-            mAnchor.addOnLayoutChangeListener(mLayoutChangeListener);
-        }
-
-        FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        );
-
-        removeAllViews();
-        View v = makeControllerView();
-        addView(v, frameParams);
-    }
-
-    @Override
-    public void setMediaPlayer(MediaController.MediaPlayerControl player) {
-        mPlayer = player;
     }
 
     private final Runnable mFadeOut = new Runnable() {
@@ -249,7 +216,7 @@ public class VideoView extends FrameLayout implements IMediaController {
         @Override
         public void run() {
             int pos = setProgress();
-            if (!mDragging && mShowing && mPlayer.isPlaying()) {
+            if (!mDragging && mShowing && ijkVideo.isPlaying()) {
                 postDelayed(mShowProgress, 1000 - (pos % 1000));
             }
         }
@@ -262,7 +229,7 @@ public class VideoView extends FrameLayout implements IMediaController {
                 show(0); // show until hide is called
                 break;
             case MotionEvent.ACTION_UP:
-                show(mDefaultTimeout); // start timeout
+                show(); // start timeout
                 break;
             case MotionEvent.ACTION_CANCEL:
                 hide();
@@ -272,7 +239,6 @@ public class VideoView extends FrameLayout implements IMediaController {
         }
         return true;
     }
-
 
     private final SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
@@ -296,9 +262,9 @@ public class VideoView extends FrameLayout implements IMediaController {
                 return;
             }
 
-            long duration = mPlayer.getDuration();
+            long duration = ijkVideo.getDuration();
             long newposition = (duration * progress) / 1000L;
-            mPlayer.seekTo((int) newposition);
+            ijkVideo.seekTo((int) newposition);
             textCurrentTime.setText(stringForTime((int) newposition));
         }
 
@@ -315,13 +281,6 @@ public class VideoView extends FrameLayout implements IMediaController {
         }
     };
 
-    private final View.OnClickListener mPauseListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            doPauseResume();
-            show(mDefaultTimeout);
-        }
-    };
 
     // This is called whenever mAnchor's layout bound changes
     private final OnLayoutChangeListener mLayoutChangeListener =
@@ -355,16 +314,17 @@ public class VideoView extends FrameLayout implements IMediaController {
 
     //暂停或播放
     private void doPauseResume() {
-        if (mPlayer.isPlaying()) {
-            mPlayer.pause();
+        if (ijkVideo.isPlaying()) {
+            ijkVideo.pause();
         } else {
-            mPlayer.start();
+            loadingProgress.setVisibility(VISIBLE);
+            ijkVideo.start();
         }
         updatePausePlay();
     }
 
     private void updatePausePlay() {
-        if (mPlayer.isPlaying()) {
+        if (ijkVideo.isPlaying()) {
             pauseButton.setImageResource(android.R.drawable.ic_media_pause);
             pauseButton.setContentDescription("stop");
         } else {
@@ -374,6 +334,133 @@ public class VideoView extends FrameLayout implements IMediaController {
     }
 
     public void setVideoPath(String path) {
-        ijkView.setVideoPath(path);
+        ijkVideo.setVideoPath(path);
+    }
+
+
+    public void setFullScreen() {
+        int orientation = getResources().getConfiguration().orientation;
+        Logger.d(orientation);
+        if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            if (mActivity != null) {
+                mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                hideActionBar();
+                Logger.d("SCREEN_ORIENTATION_LANDSCAPE");
+            }
+        } else {
+            if (mActivity != null) {
+                mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                Logger.d("SCREEN_ORIENTATION_PORTRAIT");
+            }
+        }
+    }
+
+    private void hideActionBar() {
+        if (mActivity != null && mActivity.getSupportActionBar() != null) {
+            mActivity.getSupportActionBar().hide();
+            mActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+    }
+
+    private void showActionBar() {
+        if (mActivity != null && mActivity.getSupportActionBar() != null) {
+            mActivity.getSupportActionBar().show();
+        }
+    }
+
+
+    AppCompatActivity mActivity;
+
+    public void setActivity(AppCompatActivity activity) {
+        this.mActivity = activity;
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        Logger.d("w:" + w + "h:" + h);
+    }
+
+    public void setConfiguration(Configuration newConfig) {
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        mWindowManager.getDefaultDisplay().getMetrics(outMetrics);
+        if (newConfig.orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            layoutParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
+            layoutParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+        } else {
+            layoutParams.width = outMetrics.widthPixels;
+            layoutParams.height = outMetrics.heightPixels;
+//            layoutParams.width = LayoutParams.MATCH_PARENT;
+//            layoutParams.height = LayoutParams.MATCH_PARENT;
+        }
+        setLayoutParams(layoutParams);
+        requestLayout();
+        Logger.d(getLayoutParams().width + "__" + getLayoutParams().height);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    public void setScreenRate(int rate) {
+        DisplayMetrics outMetrics = getResources().getDisplayMetrics();
+        int widthPixels = outMetrics.widthPixels;
+        int heightPixels = outMetrics.heightPixels;
+        int width = 0;
+        int height = 0;
+        if (getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {// 竖屏
+            if (rate == IRenderView.AR_ASPECT_FIT_PARENT) {
+                width = ijkVideo.getVideoWidth();
+                height = ijkVideo.getVideoHeight();
+            } else if (rate == IRenderView.AR_4_3_FIT_PARENT) {
+                width = widthPixels;
+                height = widthPixels * 3 / 4;
+            } else if (rate == IRenderView.AR_16_9_FIT_PARENT) {
+                width = widthPixels;
+                height = widthPixels * 9 / 16;
+            }
+
+        } else {
+            if (rate == IRenderView.AR_ASPECT_FIT_PARENT) {
+                width = widthPixels;
+                height = heightPixels;
+            } else if (rate == IRenderView.AR_4_3_FIT_PARENT) {
+                width = widthPixels;
+                height = heightPixels;
+            } else if (rate == IRenderView.AR_16_9_FIT_PARENT) {
+                width = widthPixels;
+                height = heightPixels;
+            }
+        }
+        if (width > 0 && height > 0) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) ijkVideo.getRenderView().getView().getLayoutParams();
+            lp.width = width;
+            lp.height = height;
+            Log.d("videoView", "getView: " + width + "__" + height);
+            ijkVideo.getRenderView().getView().setLayoutParams(lp);
+            //    mRenderView.setVideoSize(width,height);
+        }
+    }
+
+    public void toggleAspectRatio() {
+        ijkVideo.toggleAspectRatio();
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ib_pause:
+                doPauseResume();
+                show(mDefaultTimeout);
+                break;
+            case R.id.ib_full_screen:
+                show(mDefaultTimeout);
+                setFullScreen();
+                break;
+
+        }
     }
 }

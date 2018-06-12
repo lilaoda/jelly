@@ -2,4 +2,6 @@
     <string name="app_name">Jelly</string>
     <string name="draw_open">open</string>
     <string name="draw_close">close</string>
+    <string name="play_description">Play</string>
+    <string name="pause_description">Pause</string>
 </resources>

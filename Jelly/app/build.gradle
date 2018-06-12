@@ -142,4 +142,6 @@ dependencies {
     api 'com.umeng.sdk:debug:1.0.0'
     //PushSDK
     api 'com.umeng.sdk:push:4.1.0'
+    api 'cn.jzvd:jiaozivideoplayer:6.2.10'
+    api 'com.github.xiaoyanger0825:NiceVieoPlayer:v2.2'
 }

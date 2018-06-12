@@ -5,6 +5,7 @@ import dagger.android.ContributesAndroidInjector;
 import lhy.jelly.ui.login.LoginActivity;
 import lhy.jelly.ui.main.MainActivity;
 import lhy.jelly.ui.music.MusicPlayActivity;
+import lhy.jelly.ui.video.PlayVidoActivity;
 
 /**
  * Created by Lilaoda on 2018/3/30.
@@ -22,4 +23,7 @@ public abstract class ActivityModule {
 
     @ContributesAndroidInjector
     abstract MusicPlayActivity musicPlayActivityInjector();
+
+    @ContributesAndroidInjector
+    abstract PlayVidoActivity playVidoActivityActivity();
 }

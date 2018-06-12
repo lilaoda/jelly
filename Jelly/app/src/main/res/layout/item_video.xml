@@ -6,7 +6,7 @@
     android:layout_height="200dp">
 
 
-    <lhy.jelly.view.VideoView
+    <lhy.jelly.view.VideoView3
         android:id="@+id/video_view"
         android:layout_width="match_parent"
         android:layout_height="200dp" />

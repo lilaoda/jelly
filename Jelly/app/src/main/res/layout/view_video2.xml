@@ -3,26 +3,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <lhy.ijkplayer.media.IjkVideoView
-        android:id="@+id/ijk_view"
+    <FrameLayout
+        android:id="@+id/surface_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+
+    <ImageView
+        android:id="@+id/iv_thumb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@mipmap/test1"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/loading"
+        style="@android:style/Widget.Holo.ProgressBar.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
 
     <RelativeLayout
         android:id="@+id/play_ui"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <ProgressBar
-            android:id="@+id/loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
-        <ImageView
-            android:id="@+id/iv_thumb"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
         <LinearLayout
             android:layout_width="match_parent"

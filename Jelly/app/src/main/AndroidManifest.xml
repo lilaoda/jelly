@@ -56,6 +56,14 @@
         </activity>
         <activity android:name=".ui.activity.MapActivity" />
         <activity android:name=".ui.music.MusicPlayActivity" android:theme="@style/TransitionsTheme"/>
+        <activity android:name=".ui.video.PlayVidoActivity"
+            android:configChanges="navigation|keyboardHidden|orientation|screenSize">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
         <!--高德地图-->
         <!--<service android:name="com.amap.api.location.APSService" />-->
         <!--<meta-data-->

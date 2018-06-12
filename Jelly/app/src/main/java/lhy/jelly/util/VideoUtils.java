@@ -22,7 +22,8 @@ public class VideoUtils {
                 MediaStore.Video.Thumbnails.VIDEO_ID};
         // 视频其他信息的查询条件
         String[] mediaColumns = {MediaStore.Video.Media._ID,
-                MediaStore.Video.Media.DATA, MediaStore.Video.Media.DURATION};
+                MediaStore.Video.Media.DATA, MediaStore.Video.Media.DURATION,
+                MediaStore.Video.Media.DISPLAY_NAME};
 
         Cursor cursor = context.getContentResolver().query(MediaStore.Video.Media
                         .EXTERNAL_CONTENT_URI,
@@ -49,6 +50,8 @@ public class VideoUtils {
                         .DATA)));
                 info.setDuration(cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video
                         .Media.DURATION)));
+                info.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video
+                        .Media.DISPLAY_NAME)));
                 sysVideoList.add(info);
             } while (cursor.moveToNext());
         }

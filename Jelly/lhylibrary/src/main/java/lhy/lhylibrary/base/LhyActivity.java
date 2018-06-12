@@ -1,7 +1,6 @@
 package lhy.lhylibrary.base;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.LayoutRes;
@@ -28,7 +27,7 @@ public class LhyActivity extends RxAppCompatActivity {
             savedInstanceState.remove(FRAGMENTS_TAG);
         }
         // getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+     //   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         LhyApplication.getInstance().addActivity(this);
     }
 

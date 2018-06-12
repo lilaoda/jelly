@@ -1,69 +1,68 @@
-/*
- * Copyright (C) 2015 Bilibili
- * Copyright (C) 2015 Zhang Rui <bbcallen@gmail.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package lhy.jelly.view;
 
-package lhy.ijkplayer.media;
-
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
-import android.widget.TableLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import lhy.ijkplayer.R;
 import lhy.ijkplayer.Settings;
+import lhy.ijkplayer.media.FileMediaDataSource;
+import lhy.ijkplayer.media.IRenderView;
+import lhy.ijkplayer.media.MediaPlayerCompat;
+import lhy.ijkplayer.media.TableLayoutBinder;
 import lhy.ijkplayer.services.MediaPlayerService;
-import tv.danmaku.ijk.media.player.AndroidMediaPlayer;
+import lhy.jelly.R;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkTimedText;
-import tv.danmaku.ijk.media.player.TextureMediaPlayer;
 import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
 import tv.danmaku.ijk.media.player.misc.IMediaFormat;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.player.misc.IjkMediaFormat;
 
-public class IjkVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
-    private String TAG = "IjkVideoView";
+public class VideoView3 extends FrameLayout implements MediaController.MediaPlayerControl, View.OnClickListener {
+    private String TAG = "VideoView3";
     // settable by the client
     private Uri mUri;
     private Map<String, String> mHeaders;
+    //播放指示器默认显示时间
+    private static final int mDefaultTimeout = 3000;
 
     // all possible internal states
     private static final int STATE_ERROR = -1;
@@ -74,6 +73,18 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private static final int STATE_PAUSED = 4;
     private static final int STATE_PLAYBACK_COMPLETED = 5;
 
+    private ImageView ivThumb;
+    private TextView textCurrentTime;
+    private SeekBar seekBar;
+    private TextView textTotalTime;
+    private ImageView fullScreenButton;
+    private ImageView pauseButton;
+    private LinearLayout llIndicator;
+    private RelativeLayout uiController;
+    private ProgressBar loadingProgress;
+    private FrameLayout sufaceContainer;
+
+
     // mCurrentState is a VideoView object's current state.
     // mTargetState is the state that a method caller intends to reach.
     // For instance, regardless the VideoView object's current state,
@@ -83,7 +94,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private int mTargetState = STATE_IDLE;
 
     // All the stuff we need for playing and showing a video
-    private IRenderView.ISurfaceHolder mSurfaceHolder = null;
+//    private IRenderView.ISurfaceHolder mSurfaceHolder = null;
     private IMediaPlayer mMediaPlayer = null;
     // private int         mAudioSession;
     private int mVideoWidth;
@@ -91,7 +102,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private int mSurfaceWidth;
     private int mSurfaceHeight;
     private int mVideoRotationDegree;
-    private IMediaController mMediaController;
     private IMediaPlayer.OnCompletionListener mOnCompletionListener;
     private IMediaPlayer.OnPreparedListener mOnPreparedListener;
     private int mCurrentBufferPercentage;
@@ -101,6 +111,10 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private boolean mCanPause = true;
     private boolean mCanSeekBack = true;
     private boolean mCanSeekForward = true;
+
+    private final StringBuilder mFormatBuilder;
+    private final Formatter mFormatter;
+    private final WindowManager mWindowManager;
 
     /** Subtitle rendering widget overlaid on top of the video. */
     // private RenderingWidget mSubtitleWidget;
@@ -112,11 +126,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     private Context mAppContext;
     private Settings mSettings;
-    private IRenderView mRenderView;
     private int mVideoSarNum;
     private int mVideoSarDen;
-
-    private InfoHudViewHolder mHudViewHolder;
 
     private long mPrepareStartTime = 0;
     private long mPrepareEndTime = 0;
@@ -124,182 +135,412 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private long mSeekStartTime = 0;
     private long mSeekEndTime = 0;
 
-    private TextView subtitleDisplay;
+    //seekBar正在拖动
+    private boolean mDragging;
+    //播放指示器是否正在显示
+    private boolean mShowing;
+    private VideoTextureView mTextureView;
+    private SurfaceTexture mSurfaceTexture;
 
-    public IjkVideoView(Context context) {
-        super(context);
-        initVideoView(context);
+
+    public VideoView3(@NonNull Context context) {
+        this(context, null);
     }
 
-    public IjkVideoView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initVideoView(context);
+    public VideoView3(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    public IjkVideoView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public VideoView3(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mFormatBuilder = new StringBuilder();
+        mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+        mAppContext = context.getApplicationContext();
+        mWindowManager = (WindowManager) mAppContext.getSystemService(Context.WINDOW_SERVICE);
+        mSettings = new Settings(mAppContext);
+        initControllerView();
         initVideoView(context);
     }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public IjkVideoView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        initVideoView(context);
-    }
-
-    // REMOVED: onMeasure
-    // REMOVED: onInitializeAccessibilityEvent
-    // REMOVED: onInitializeAccessibilityNodeInfo
-    // REMOVED: resolveAdjustedSize
 
     private void initVideoView(Context context) {
-        mAppContext = context.getApplicationContext();
-        mSettings = new Settings(mAppContext);
-
         initBackground();
-        initRenders();
-
-        mVideoWidth = 0;
-        mVideoHeight = 0;
-        // REMOVED: getHolder().addCallback(mSHCallback);
-        // REMOVED: getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+//        setRenderView();
+        setTextureView();
         setFocusable(true);
         setFocusableInTouchMode(true);
         requestFocus();
-        // REMOVED: mPendingSubtitleTracks = new Vector<Pair<InputStream, MediaFormat>>();
-        mCurrentState = STATE_IDLE;
-        mTargetState = STATE_IDLE;
-
-        subtitleDisplay = new TextView(context);
-        subtitleDisplay.setTextSize(24);
-        subtitleDisplay.setGravity(Gravity.CENTER);
-        FrameLayout.LayoutParams layoutParams_txt = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.BOTTOM);
-        addView(subtitleDisplay, layoutParams_txt);
     }
 
-    public void setRenderView(IRenderView renderView) {
-        if (mRenderView != null) {
-            if (mMediaPlayer != null)
-                mMediaPlayer.setDisplay(null);
 
-            View renderUIView = mRenderView.getView();
-            mRenderView.removeRenderCallback(mSHCallback);
-            mRenderView = null;
-            removeView(renderUIView);
+    private void initControllerView() {
+        setBackgroundColor(Color.BLACK);
+        LayoutInflater inflate = (LayoutInflater) mAppContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflate.inflate(R.layout.view_video3, this);
+        sufaceContainer = view.findViewById(R.id.surface_container);
+        ivThumb = view.findViewById(R.id.iv_thumb);
+        textCurrentTime = view.findViewById(lhy.jelly.R.id.text_current_time);
+        seekBar = view.findViewById(R.id.sb_progress);
+        textTotalTime = view.findViewById(R.id.text_total_time);
+        fullScreenButton = view.findViewById(R.id.ib_full_screen);
+        llIndicator = view.findViewById(R.id.ll_indicator);
+        uiController = view.findViewById(R.id.play_ui);
+        pauseButton = view.findViewById(R.id.ib_pause);
+        loadingProgress = view.findViewById(R.id.loading);
+
+        seekBar.setOnSeekBarChangeListener(mSeekListener);
+        seekBar.setMax(1000);
+        pauseButton.setOnClickListener(this);
+        fullScreenButton.setOnClickListener(this);
+    }
+
+
+    private final SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onStartTrackingTouch(SeekBar bar) {
+            show(3600000);
+            mDragging = true;
+
+            // By removing these pending progress messages we make sure
+            // that a) we won't update the progress while the user adjusts
+            // the seekbar and b) once the user is done dragging the thumb
+            // we will post one of these messages to the queue again and
+            // this ensures that there will be exactly one message queued up.
+            removeCallbacks(mShowProgress);
         }
 
-        if (renderView == null)
+        @Override
+        public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
+            if (!fromuser) {
+                // We're not interested in programmatically generated changes to
+                // the progress bar's position.
+                return;
+            }
+
+            long duration = mMediaPlayer.getDuration();
+            long newposition = (duration * progress) / 1000L;
+            mMediaPlayer.seekTo((int) newposition);
+            textCurrentTime.setText(stringForTime((int) newposition));
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar bar) {
+            mDragging = false;
+            setProgress();
+            show(mDefaultTimeout);
+
+            // Ensure that progress is properly updated in the future,
+            // the call to show() does not guarantee this because it is a
+            // no-op if we are already showing.
+            post(mShowProgress);
+        }
+    };
+
+    public void show() {
+        show(mDefaultTimeout);
+    }
+
+    //隐藏指示器
+    public void hide() {
+        if (mShowing) {
+            uiController.setVisibility(GONE);
+            removeCallbacks(mShowProgress);
+            mShowing = false;
+        }
+    }
+
+    private final Runnable mFadeOut = new Runnable() {
+        @Override
+        public void run() {
+            hide();
+        }
+    };
+
+    //更新进度条事件
+    private final Runnable mShowProgress = new Runnable() {
+        @Override
+        public void run() {
+            int pos = setProgress();
+            if (!mDragging && mShowing && mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+                postDelayed(mShowProgress, 1000 - (pos % 1000));
+            }
+        }
+    };
+
+    //设置seekbar的进度，并更新当前时间与总时间
+    private int setProgress() {
+        if (mMediaPlayer == null || mDragging) {
+            return 0;
+        }
+        int position = getCurrentPosition();
+        int duration = getDuration();
+
+        if (duration > 0) {
+            // use long to avoid overflow
+            long pos = 1000L * position / duration;
+            seekBar.setProgress((int) pos);
+
+            seekBar.setSecondaryProgress(mCurrentBufferPercentage * 10);
+        }
+
+        textTotalTime.setText(stringForTime(duration));
+        textCurrentTime.setText(stringForTime(position));
+
+        return position;
+
+    }
+
+    private String stringForTime(int timeMs) {
+        int totalSeconds = timeMs / 1000;
+
+        int seconds = totalSeconds % 60;
+        int minutes = (totalSeconds / 60) % 60;
+        int hours = totalSeconds / 3600;
+
+        mFormatBuilder.setLength(0);
+        if (hours > 0) {
+            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+        } else {
+            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+        }
+    }
+
+    public void show(int timeout) {
+        if (!mShowing) {
+            uiController.setVisibility(VISIBLE);
+            setProgress();
+            mShowing = true;
+        }
+        // cause the progress bar to be updated even if mShowing
+        // was already true.  This happens, for example, if we're
+        // paused with the progress bar showing the user hits play.
+        //更新进度条
+        post(mShowProgress);
+
+        if (timeout != 0) {
+            removeCallbacks(mFadeOut);
+            postDelayed(mFadeOut, timeout);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case lhy.jelly.R.id.ib_pause:
+                doPauseResume();
+                show(mDefaultTimeout);
+                break;
+            case lhy.jelly.R.id.ib_full_screen:
+                show(mDefaultTimeout);
+//                setFullScreen();
+                break;
+
+        }
+    }
+//
+//    public void setFullScreen() {
+//        int orientation = getResources().getConfiguration().orientation;
+//        Logger.d(orientation);
+//        if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+//            if (mActivity != null) {
+//                mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//                hideActionBar();
+//                Logger.d("SCREEN_ORIENTATION_LANDSCAPE");
+//            }
+//        } else {
+//            if (mActivity != null) {
+//                mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//                Logger.d("SCREEN_ORIENTATION_PORTRAIT");
+//            }
+//        }
+//    }
+//
+//    private void hideActionBar() {
+//        if (mActivity != null && mActivity.getSupportActionBar() != null) {
+//            mActivity.getSupportActionBar().hide();
+//            mActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
+//    }
+//
+//    private void showActionBar() {
+//        if (mActivity != null && mActivity.getSupportActionBar() != null) {
+//            mActivity.getSupportActionBar().show();
+//        }
+//    }
+//
+//    AppCompatActivity mActivity;
+//
+//    public void setActivity(AppCompatActivity activity) {
+//        this.mActivity = activity;
+//    }
+//
+//    @Override
+//    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+//        super.onSizeChanged(w, h, oldw, oldh);
+//        Logger.d("w:" + w + "h:" + h);
+//    }
+
+//    public void setConfiguration(Configuration newConfig) {
+//        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+//        DisplayMetrics outMetrics = new DisplayMetrics();
+//        mWindowManager.getDefaultDisplay().getMetrics(outMetrics);
+//        if (newConfig.orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+//            layoutParams.width = LayoutParams.WRAP_CONTENT;
+//            layoutParams.height = LayoutParams.WRAP_CONTENT;
+//        } else {
+//            layoutParams.width = outMetrics.widthPixels;
+//            layoutParams.height = outMetrics.heightPixels;
+////            layoutParams.width = LayoutParams.MATCH_PARENT;
+////            layoutParams.height = LayoutParams.MATCH_PARENT;
+//        }
+//        setLayoutParams(layoutParams);
+//        requestLayout();
+//        Logger.d(getLayoutParams().width + "__" + getLayoutParams().height);
+//    }
+
+    //暂停或播放
+    private void doPauseResume() {
+        Logger.d("doPauseResume");
+        if (mMediaPlayer == null) {
+            openVideo();
+            PlayerManager.releaseOldView();
+            PlayerManager.setCurrentVideoView(this);
+            requestLayout();
+            invalidate();
+            start();
             return;
+        }
+        if (isPlaying()) {
+            mMediaPlayer.pause();
+        } else {
+            start();
+        }
+        updatePausePlay();
+    }
 
-        mRenderView = renderView;
-        renderView.setAspectRatio(mCurrentAspectRatio);
-        if (mVideoWidth > 0 && mVideoHeight > 0)
-            renderView.setVideoSize(mVideoWidth, mVideoHeight);
-        if (mVideoSarNum > 0 && mVideoSarDen > 0)
-            renderView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
+    private void updatePausePlay() {
+        if (isPlaying()) {
+            pauseButton.setImageResource(android.R.drawable.ic_media_pause);
+            pauseButton.setContentDescription("stop");
+        } else {
+            pauseButton.setImageResource(android.R.drawable.ic_media_play);
+            pauseButton.setContentDescription("play");
+        }
+    }
 
-        View renderUIView = mRenderView.getView();
+    private void setTextureView() {
+//        if (mTextureView != null) {
+//            if (mMediaPlayer != null)
+//                mMediaPlayer.setDisplay(null);
+//
+//            mTextureView.setSurfaceTextureListener(null);
+//            mTextureView = null;
+//            removeView(mTextureView);
+//        }
+
+        mTextureView = new VideoTextureView(getContext());
+        mTextureView.setAspectRatio(mCurrentAspectRatio);
+        if (mVideoWidth > 0 && mVideoHeight > 0) {
+            mTextureView.setVideoSize(mVideoWidth, mVideoHeight);
+        }
+        if (mVideoSarNum > 0 && mVideoSarDen > 0) {
+            mTextureView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
+        }
+
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 Gravity.CENTER);
-        renderUIView.setLayoutParams(lp);
-        addView(renderUIView);
-
-        mRenderView.addRenderCallback(mSHCallback);
-        mRenderView.setVideoRotation(mVideoRotationDegree);
-    }
-
-    public void setRender(int render) {
-        switch (render) {
-            case RENDER_NONE:
-                setRenderView(null);
-                break;
-            case RENDER_TEXTURE_VIEW: {
-                TextureRenderView renderView = new TextureRenderView(getContext());
+        mTextureView.setLayoutParams(lp);
+        addView(mTextureView, 0);
+        mTextureView.setVideoRotation(mVideoRotationDegree);
+        mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                Logger.d("onSurfaceTextureAvailable");
+                mSurfaceTexture = surface;
                 if (mMediaPlayer != null) {
-                    renderView.getSurfaceHolder().bindToMediaPlayer(mMediaPlayer);
-                    renderView.setVideoSize(mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
-                    renderView.setVideoSampleAspectRatio(mMediaPlayer.getVideoSarNum(), mMediaPlayer.getVideoSarDen());
-                    renderView.setAspectRatio(mCurrentAspectRatio);
+                    bindMediaSurface(mMediaPlayer, surface);
+                } else {
+                    openVideo();
                 }
-                setRenderView(renderView);
-                break;
             }
-            case RENDER_SURFACE_VIEW: {
-                SurfaceRenderView renderView = new SurfaceRenderView(getContext());
-                setRenderView(renderView);
-                break;
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+                Logger.d("onSurfaceTextureSizeChanged");
+                mSurfaceWidth = width;
+                mSurfaceHeight = height;
+                boolean isValidState = (mTargetState == STATE_PLAYING);
+                boolean hasValidSize = (mVideoWidth == width && mVideoHeight == height);
+                if (mMediaPlayer != null && isValidState && hasValidSize) {
+                    if (mSeekWhenPrepared != 0) {
+                        seekTo(mSeekWhenPrepared);
+                    }
+                    start();
+                }
             }
-            default:
-                Log.e(TAG, String.format(Locale.getDefault(), "invalid render %d\n", render));
-                break;
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                Logger.d("onSurfaceTextureDestroyed");
+
+                // after we return from this we can't use the surface any more
+                mSurfaceTexture = null;
+                // REMOVED: if (mMediaController != null) mMediaController.hide();
+                // REMOVED: release(true);
+                releaseWithoutStop();
+                return false;
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+            }
+        });
+    }
+
+    private void bindMediaSurface(IMediaPlayer mp, SurfaceTexture surface) {
+        if (mp == null) {
+            return;
         }
+        if (surface == null) {
+            mp.setDisplay(null);
+        }
+        Surface surface1 = new Surface(surface);
+        mp.setSurface(surface1);
     }
 
-    public void setHudView(TableLayout tableLayout) {
-        mHudViewHolder = new InfoHudViewHolder(getContext(), tableLayout);
-    }
 
-    /**
-     * Sets video path.
-     *
-     * @param path the path of the video.
-     */
     public void setVideoPath(String path) {
         setVideoURI(Uri.parse(path));
     }
 
-    /**
-     * Sets video URI.
-     *
-     * @param uri the URI of the video.
-     */
     public void setVideoURI(Uri uri) {
         setVideoURI(uri, null);
     }
 
-    /**
-     * Sets video URI using specific headers.
-     *
-     * @param uri     the URI of the video.
-     * @param headers the headers for the URI request.
-     *                Note that the cross domain redirection is allowed by default, but that can be
-     *                changed with key/value pairs through the headers parameter with
-     *                "android-allow-cross-domain-redirect" as the key and "0" or "1" as the value
-     *                to disallow or allow cross domain redirection.
-     */
     private void setVideoURI(Uri uri, Map<String, String> headers) {
         mUri = uri;
         mHeaders = headers;
         mSeekWhenPrepared = 0;
-        openVideo();
-        requestLayout();
-        invalidate();
+//      //  openVideo();
+//        requestLayout();
+//        invalidate();
     }
-
-    // REMOVED: addSubtitleSource
-    // REMOVED: mPendingSubtitleTracks
 
     public void stopPlayback() {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
             mMediaPlayer = null;
-            if (mHudViewHolder != null)
-                mHudViewHolder.setMediaPlayer(null);
             mCurrentState = STATE_IDLE;
             mTargetState = STATE_IDLE;
             AudioManager am = (AudioManager) mAppContext.getSystemService(Context.AUDIO_SERVICE);
             am.abandonAudioFocus(null);
         }
     }
-    @TargetApi(Build.VERSION_CODES.M)
+
     private void openVideo() {
-        if (mUri == null || mSurfaceHolder == null) {
+        if (mUri == null || mSurfaceTexture == null) {
             // not ready for playback just yet, will try again later
             return;
         }
@@ -311,13 +552,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
         try {
-            mMediaPlayer = createPlayer(Settings.PV_PLAYER__IjkMediaPlayer);
-
-            // TODO: create SubtitleController in MediaPlayer, but we need
-            // a context for the subtitle renderers
-            final Context context = getContext();
-            // REMOVED: SubtitleController
-
+            mMediaPlayer = PlayerManager.getMediaPlayer();
             // REMOVED: mAudioSession
             mMediaPlayer.setOnPreparedListener(mPreparedListener);
             mMediaPlayer.setOnVideoSizeChangedListener(mSizeChangedListener);
@@ -330,7 +565,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             mCurrentBufferPercentage = 0;
             String scheme = mUri.getScheme();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                    mSettings.getUsingMediaDataSource() &&
                     (TextUtils.isEmpty(scheme) || scheme.equalsIgnoreCase("file"))) {
                 IMediaDataSource dataSource = new FileMediaDataSource(new File(mUri.toString()));
                 mMediaPlayer.setDataSource(dataSource);
@@ -339,22 +573,17 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             } else {
                 mMediaPlayer.setDataSource(mUri.toString());
             }
-            bindSurfaceHolder(mMediaPlayer, mSurfaceHolder);
+
+            bindMediaSurface(mMediaPlayer, mSurfaceTexture);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
             mPrepareStartTime = System.currentTimeMillis();
             mMediaPlayer.prepareAsync();
             Log.d(TAG, "openVideo: mMediaPlayer.prepareAsync()");
 
-            if (mHudViewHolder != null)
-                mHudViewHolder.setMediaPlayer(mMediaPlayer);
-
-            // REMOVED: mPendingSubtitleTracks
-
             // we don't set the target state here either, but preserve the
             // target state that was there before.
             mCurrentState = STATE_PREPARING;
-            attachMediaController();
         } catch (IOException ex) {
             Log.w(TAG, "Unable to open content: " + mUri, ex);
             mCurrentState = STATE_ERROR;
@@ -370,35 +599,19 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         }
     }
 
-    public void setMediaController(IMediaController controller) {
-        if (mMediaController != null) {
-            mMediaController.hide();
-        }
-        mMediaController = controller;
-        attachMediaController();
-    }
-
-    private void attachMediaController() {
-        if (mMediaPlayer != null && mMediaController != null) {
-            mMediaController.setMediaPlayer(this);
-            View anchorView = this.getParent() instanceof View ?
-                    (View) this.getParent() : this;
-            mMediaController.setAnchorView(anchorView);
-            mMediaController.setEnabled(isInPlaybackState());
-        }
-    }
 
     IMediaPlayer.OnVideoSizeChangedListener mSizeChangedListener =
             new IMediaPlayer.OnVideoSizeChangedListener() {
                 public void onVideoSizeChanged(IMediaPlayer mp, int width, int height, int sarNum, int sarDen) {
+                    Logger.d("onVideoSizeChanged");
                     mVideoWidth = mp.getVideoWidth();
                     mVideoHeight = mp.getVideoHeight();
                     mVideoSarNum = mp.getVideoSarNum();
                     mVideoSarDen = mp.getVideoSarDen();
                     if (mVideoWidth != 0 && mVideoHeight != 0) {
-                        if (mRenderView != null) {
-                            mRenderView.setVideoSize(mVideoWidth, mVideoHeight);
-                            mRenderView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
+                        if (mTextureView != null) {
+                            mTextureView.setVideoSize(mVideoWidth, mVideoHeight);
+                            mTextureView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
                         }
                         // REMOVED: getHolder().setFixedSize(mVideoWidth, mVideoHeight);
                         requestLayout();
@@ -409,9 +622,9 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     IMediaPlayer.OnPreparedListener mPreparedListener = new IMediaPlayer.OnPreparedListener() {
         public void onPrepared(IMediaPlayer mp) {
             mPrepareEndTime = System.currentTimeMillis();
-            if (mHudViewHolder != null) {
-                mHudViewHolder.updateLoadCost(mPrepareEndTime - mPrepareStartTime);
-            }
+            loadingProgress.setVisibility(GONE);
+            ivThumb.setVisibility(GONE);
+            uiController.setEnabled(true);
             mCurrentState = STATE_PREPARED;
 
             // Get the capabilities of the player for this stream
@@ -420,9 +633,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             if (mOnPreparedListener != null) {
                 mOnPreparedListener.onPrepared(mMediaPlayer);
             }
-            if (mMediaController != null) {
-                mMediaController.setEnabled(true);
-            }
+
             mVideoWidth = mp.getVideoWidth();
             mVideoHeight = mp.getVideoHeight();
 
@@ -431,26 +642,21 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                 seekTo(seekToPosition);
             }
             if (mVideoWidth != 0 && mVideoHeight != 0) {
-                //Log.i("@@@@", "video size: " + mVideoWidth +"/"+ mVideoHeight);
                 // REMOVED: getHolder().setFixedSize(mVideoWidth, mVideoHeight);
-                if (mRenderView != null) {
-                    mRenderView.setVideoSize(mVideoWidth, mVideoHeight);
-                    mRenderView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
-                    if (!mRenderView.shouldWaitForResize() || mSurfaceWidth == mVideoWidth && mSurfaceHeight == mVideoHeight) {
+                if (mTextureView != null) {
+                    mTextureView.setVideoSize(mVideoWidth, mVideoHeight);
+                    mTextureView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
+                    if (!mTextureView.shouldWaitForResize() || mSurfaceWidth == mVideoWidth && mSurfaceHeight == mVideoHeight) {
                         // We didn't actually change the size (it was already at the size
                         // we need), so we won't get a "surface changed" callback, so
                         // start the video here instead of in the callback.
                         if (mTargetState == STATE_PLAYING) {
                             start();
-                            if (mMediaController != null) {
-                                mMediaController.show();
-                            }
+                            show();
+
                         } else if (!isPlaying() &&
                                 (seekToPosition != 0 || getCurrentPosition() > 0)) {
-                            if (mMediaController != null) {
-                                // Show the media controls when we're paused into a video and make 'em stick.
-                                mMediaController.show(0);
-                            }
+                            show(0);
                         }
                     }
                 }
@@ -469,9 +675,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                 public void onCompletion(IMediaPlayer mp) {
                     mCurrentState = STATE_PLAYBACK_COMPLETED;
                     mTargetState = STATE_PLAYBACK_COMPLETED;
-                    if (mMediaController != null) {
-                        mMediaController.hide();
-                    }
+                    hide();
                     if (mOnCompletionListener != null) {
                         mOnCompletionListener.onCompletion(mMediaPlayer);
                     }
@@ -518,8 +722,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                         case IMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED:
                             mVideoRotationDegree = arg2;
                             Log.d(TAG, "MEDIA_INFO_VIDEO_ROTATION_CHANGED: " + arg2);
-                            if (mRenderView != null)
-                                mRenderView.setVideoRotation(arg2);
+                            if (mTextureView != null)
+                                mTextureView.setVideoRotation(arg2);
                             break;
                         case IMediaPlayer.MEDIA_INFO_AUDIO_RENDERING_START:
                             Log.d(TAG, "MEDIA_INFO_AUDIO_RENDERING_START:");
@@ -535,10 +739,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     Log.d(TAG, "Error: " + framework_err + "," + impl_err);
                     mCurrentState = STATE_ERROR;
                     mTargetState = STATE_ERROR;
-                    if (mMediaController != null) {
-                        mMediaController.hide();
-                    }
-
+                    hide();
+                    loadingProgress.setVisibility(GONE);
                     /* If an error handler has been supplied, use it and finish. */
                     if (mOnErrorListener != null) {
                         if (mOnErrorListener.onError(mMediaPlayer, framework_err, impl_err)) {
@@ -593,19 +795,13 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         @Override
         public void onSeekComplete(IMediaPlayer mp) {
             mSeekEndTime = System.currentTimeMillis();
-            if (mHudViewHolder != null) {
-                mHudViewHolder.updateSeekCost(mSeekEndTime - mSeekStartTime);
-            }
-
         }
     };
 
     private IMediaPlayer.OnTimedTextListener mOnTimedTextListener = new IMediaPlayer.OnTimedTextListener() {
         @Override
         public void onTimedText(IMediaPlayer mp, IjkTimedText text) {
-            if (text != null) {
-                subtitleDisplay.setText(text.getText());
-            }
+            Log.d(TAG, "onTimedText: " + text.getText());
         }
     };
 
@@ -651,68 +847,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         mOnInfoListener = l;
     }
 
-    // REMOVED: mSHCallback
-    private void bindSurfaceHolder(IMediaPlayer mp, IRenderView.ISurfaceHolder holder) {
-        if (mp == null)
-            return;
-
-        if (holder == null) {
-            mp.setDisplay(null);
-            return;
-        }
-
-        holder.bindToMediaPlayer(mp);
-    }
-
-    IRenderView.IRenderCallback mSHCallback = new IRenderView.IRenderCallback() {
-        @Override
-        public void onSurfaceChanged(@NonNull IRenderView.ISurfaceHolder holder, int format, int w, int h) {
-            if (holder.getRenderView() != mRenderView) {
-                Log.e(TAG, "onSurfaceChanged: unmatched render callback\n");
-                return;
-            }
-
-            mSurfaceWidth = w;
-            mSurfaceHeight = h;
-            boolean isValidState = (mTargetState == STATE_PLAYING);
-            boolean hasValidSize = !mRenderView.shouldWaitForResize() || (mVideoWidth == w && mVideoHeight == h);
-            if (mMediaPlayer != null && isValidState && hasValidSize) {
-                if (mSeekWhenPrepared != 0) {
-                    seekTo(mSeekWhenPrepared);
-                }
-                start();
-            }
-        }
-
-        @Override
-        public void onSurfaceCreated(@NonNull IRenderView.ISurfaceHolder holder, int width, int height) {
-            if (holder.getRenderView() != mRenderView) {
-                Log.e(TAG, "onSurfaceCreated: unmatched render callback\n");
-                return;
-            }
-
-            mSurfaceHolder = holder;
-            if (mMediaPlayer != null)
-                bindSurfaceHolder(mMediaPlayer, holder);
-            else
-                openVideo();
-        }
-
-        @Override
-        public void onSurfaceDestroyed(@NonNull IRenderView.ISurfaceHolder holder) {
-            if (holder.getRenderView() != mRenderView) {
-                Log.e(TAG, "onSurfaceDestroyed: unmatched render callback\n");
-                return;
-            }
-
-            // after we return from this we can't use the surface any more
-            mSurfaceHolder = null;
-            // REMOVED: if (mMediaController != null) mMediaController.hide();
-            // REMOVED: release(true);
-            releaseWithoutStop();
-        }
-    };
-
     public void releaseWithoutStop() {
         if (mMediaPlayer != null)
             mMediaPlayer.setDisplay(null);
@@ -738,7 +872,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (isInPlaybackState() && mMediaController != null) {
+        if (isInPlaybackState()) {
             toggleMediaControlsVisiblity();
         }
         return false;
@@ -746,7 +880,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     @Override
     public boolean onTrackballEvent(MotionEvent ev) {
-        if (isInPlaybackState() && mMediaController != null) {
+        if (isInPlaybackState()) {
             toggleMediaControlsVisiblity();
         }
         return false;
@@ -761,28 +895,28 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                 keyCode != KeyEvent.KEYCODE_MENU &&
                 keyCode != KeyEvent.KEYCODE_CALL &&
                 keyCode != KeyEvent.KEYCODE_ENDCALL;
-        if (isInPlaybackState() && isKeyCodeSupported && mMediaController != null) {
+        if (isInPlaybackState() && isKeyCodeSupported) {
             if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK ||
                     keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
                 if (mMediaPlayer.isPlaying()) {
                     pause();
-                    mMediaController.show();
+                    show();
                 } else {
                     start();
-                    mMediaController.hide();
+                    hide();
                 }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
                 if (!mMediaPlayer.isPlaying()) {
                     start();
-                    mMediaController.hide();
+                    hide();
                 }
                 return true;
             } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP
                     || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
                 if (mMediaPlayer.isPlaying()) {
                     pause();
-                    mMediaController.show();
+                    show();
                 }
                 return true;
             } else {
@@ -794,10 +928,10 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     }
 
     private void toggleMediaControlsVisiblity() {
-        if (mMediaController.isShowing()) {
-            mMediaController.hide();
+        if (mShowing) {
+            hide();
         } else {
-            mMediaController.show();
+            show();
         }
     }
 
@@ -897,24 +1031,11 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         return 0;
     }
 
-    // REMOVED: getAudioSessionId();
-    // REMOVED: onAttachedToWindow();
-    // REMOVED: onDetachedFromWindow();
-    // REMOVED: onLayout();
-    // REMOVED: draw();
-    // REMOVED: measureAndLayoutSubtitleWidget();
-    // REMOVED: setSubtitleWidget();
-    // REMOVED: getSubtitleLooper();
-
-    //-------------------------
-    // Extend: Aspect Ratio
-    //-------------------------
-
     private static final int[] s_allAspectRatio = {
             IRenderView.AR_ASPECT_FIT_PARENT,
             IRenderView.AR_ASPECT_FILL_PARENT,
             IRenderView.AR_ASPECT_WRAP_CONTENT,
-             IRenderView.AR_MATCH_PARENT,
+            IRenderView.AR_MATCH_PARENT,
             IRenderView.AR_16_9_FIT_PARENT,
             IRenderView.AR_4_3_FIT_PARENT};
     private int mCurrentAspectRatioIndex = 0;
@@ -925,8 +1046,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         mCurrentAspectRatioIndex %= s_allAspectRatio.length;
 
         mCurrentAspectRatio = s_allAspectRatio[mCurrentAspectRatioIndex];
-        if (mRenderView != null)
-            mRenderView.setAspectRatio(mCurrentAspectRatio);
+        if (mTextureView != null)
+            mTextureView.setAspectRatio(mCurrentAspectRatio);
         return mCurrentAspectRatio;
     }
 
@@ -939,52 +1060,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     private List<Integer> mAllRenders = new ArrayList<Integer>();
     private int mCurrentRenderIndex = 0;
-    private int mCurrentRender = RENDER_NONE;
-
-    private void initRenders() {
-        mAllRenders.clear();
-
-        if (mSettings.getEnableSurfaceView())
-            mAllRenders.add(RENDER_SURFACE_VIEW);
-        if (mSettings.getEnableTextureView() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-            mAllRenders.add(RENDER_TEXTURE_VIEW);
-        if (mSettings.getEnableNoView())
-            mAllRenders.add(RENDER_NONE);
-
-        if (mAllRenders.isEmpty())
-            mAllRenders.add(RENDER_SURFACE_VIEW);
-        mCurrentRender = mAllRenders.get(mCurrentRenderIndex);
-        setRender(mCurrentRender);
-    }
-
-    public int toggleRender() {
-        mCurrentRenderIndex++;
-        mCurrentRenderIndex %= mAllRenders.size();
-
-        mCurrentRender = mAllRenders.get(mCurrentRenderIndex);
-        setRender(mCurrentRender);
-        return mCurrentRender;
-    }
-
-    @NonNull
-    public static String getRenderText(Context context, int render) {
-        String text;
-        switch (render) {
-            case RENDER_NONE:
-                text = context.getString(R.string.VideoView_render_none);
-                break;
-            case RENDER_SURFACE_VIEW:
-                text = context.getString(R.string.VideoView_render_surface_view);
-                break;
-            case RENDER_TEXTURE_VIEW:
-                text = context.getString(R.string.VideoView_render_texture_view);
-                break;
-            default:
-                text = context.getString(R.string.N_A);
-                break;
-        }
-        return text;
-    }
 
     //-------------------------
     // Extend: Player
@@ -993,99 +1068,100 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         if (mMediaPlayer != null)
             mMediaPlayer.release();
 
-        if (mRenderView != null)
-            mRenderView.getView().invalidate();
+        if (mTextureView != null)
+            mTextureView.invalidate();
         openVideo();
         return mSettings.getPlayer();
     }
 
-    @NonNull
-    public static String getPlayerText(Context context, int player) {
-        String text;
-        switch (player) {
-            case Settings.PV_PLAYER__AndroidMediaPlayer:
-                text = context.getString(R.string.VideoView_player_AndroidMediaPlayer);
-                break;
-            case Settings.PV_PLAYER__IjkMediaPlayer:
-                text = context.getString(R.string.VideoView_player_IjkMediaPlayer);
-                break;
-//            case Settings.PV_PLAYER__IjkExoMediaPlayer:
-//                text = context.getString(R.string.VideoView_player_IjkExoMediaPlayer);
+//    @NonNull
+//    public static String getPlayerText(Context context, int player) {
+//        String text;
+//        switch (player) {
+//            case Settings.PV_PLAYER__AndroidMediaPlayer:
+//                text = context.getString(R.string.VideoView_player_AndroidMediaPlayer);
 //                break;
-            default:
-                text = context.getString(R.string.N_A);
-                break;
-        }
-        return text;
-    }
+//            case Settings.PV_PLAYER__IjkMediaPlayer:
+//                text = context.getString(R.string.VideoView_player_IjkMediaPlayer);
+//                break;
+////            case Settings.PV_PLAYER__IjkExoMediaPlayer:
+////                text = context.getString(R.string.VideoView_player_IjkExoMediaPlayer);
+////                break;
+//            default:
+//                text = context.getString(R.string.N_A);
+//                break;
+//        }
+//        return text;
+//    }
 
-    public IMediaPlayer createPlayer(int playerType) {
-        IMediaPlayer mediaPlayer = null;
-
-        switch (playerType) {
-//            case Settings.PV_PLAYER__IjkExoMediaPlayer: {
-//                IjkExoMediaPlayer IjkExoMediaPlayer = new IjkExoMediaPlayer(mAppContext);
-//                mediaPlayer = IjkExoMediaPlayer;
-//            }
-//            break;
-            case Settings.PV_PLAYER__AndroidMediaPlayer: {
-                AndroidMediaPlayer androidMediaPlayer = new AndroidMediaPlayer();
-                mediaPlayer = androidMediaPlayer;
-            }
-            break;
-            case Settings.PV_PLAYER__IjkMediaPlayer:
-            default: {
-                IjkMediaPlayer ijkMediaPlayer = null;
-                if (mUri != null) {
-                    ijkMediaPlayer = new IjkMediaPlayer();
-                    ijkMediaPlayer.native_setLogLevel(IjkMediaPlayer.IJK_LOG_DEBUG);
-
-                    if (mSettings.getUsingMediaCodec()) {
-                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
-                        if (mSettings.getUsingMediaCodecAutoRotate()) {
-                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1);
-                        } else {
-                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 0);
-                        }
-                        if (mSettings.getMediaCodecHandleResolutionChange()) {
-                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1);
-                        } else {
-                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 0);
-                        }
-                    } else {
-                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
-                    }
-
-                    if (mSettings.getUsingOpenSLES()) {
-                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
-                    } else {
-                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
-                    }
-
-                    String pixelFormat = mSettings.getPixelFormat();
-                    if (TextUtils.isEmpty(pixelFormat)) {
-                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
-                    } else {
-                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", pixelFormat);
-                    }
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
-
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
-
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
-                }
-                mediaPlayer = ijkMediaPlayer;
-            }
-            break;
-        }
-
-        if (mSettings.getEnableDetachedSurfaceTextureView()) {
-            mediaPlayer = new TextureMediaPlayer(mediaPlayer);
-        }
-
-        return mediaPlayer;
-    }
+//    public IMediaPlayer createPlayer(int playerType) {
+//        IjkMediaPlayer mediaPlayer = new IjkMediaPlayer();
+//        mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
+//        return mediaPlayer;
+//
+////        switch (playerType) {
+//////            case Settings.PV_PLAYER__IjkExoMediaPlayer: {
+//////                IjkExoMediaPlayer IjkExoMediaPlayer = new IjkExoMediaPlayer(mAppContext);
+//////                mediaPlayer = IjkExoMediaPlayer;
+//////            }
+//////            break;
+////            case Settings.PV_PLAYER__AndroidMediaPlayer: {
+////                AndroidMediaPlayer androidMediaPlayer = new AndroidMediaPlayer();
+////                mediaPlayer = androidMediaPlayer;
+////            }
+////            break;
+////            case Settings.PV_PLAYER__IjkMediaPlayer:
+////            default: {
+////                IjkMediaPlayer ijkMediaPlayer = null;
+////                if (mUri != null) {
+////                    ijkMediaPlayer = new IjkMediaPlayer();
+////                    ijkMediaPlayer.native_setLogLevel(IjkMediaPlayer.IJK_LOG_DEBUG);
+////
+////                    if (mSettings.getUsingMediaCodec()) {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
+////                        if (mSettings.getUsingMediaCodecAutoRotate()) {
+////                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1);
+////                        } else {
+////                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 0);
+////                        }
+////                        if (mSettings.getMediaCodecHandleResolutionChange()) {
+////                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1);
+////                        } else {
+////                            ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 0);
+////                        }
+////                    } else {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
+////                    }
+////
+////                    if (mSettings.getUsingOpenSLES()) {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1);
+////                    } else {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
+////                    }
+////
+////                    String pixelFormat = mSettings.getPixelFormat();
+////                    if (TextUtils.isEmpty(pixelFormat)) {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
+////                    } else {
+////                        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", pixelFormat);
+////                    }
+////                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
+////                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);//默认是1 自动播放
+////
+////                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
+////
+////                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
+////                }
+////                mediaPlayer = ijkMediaPlayer;
+////            }
+////            break;
+////        }
+////
+////        if (mSettings.getEnableDetachedSurfaceTextureView()) {
+////            mediaPlayer = new TextureMediaPlayer(mediaPlayer);
+////        }
+////        return mediaPlayer;
+//    }
 
     //-------------------------
     // Extend: Background
@@ -1098,8 +1174,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         if (mEnableBackgroundPlay) {
             MediaPlayerService.intentToStart(getContext());
             mMediaPlayer = MediaPlayerService.getMediaPlayer();
-            if (mHudViewHolder != null)
-                mHudViewHolder.setMediaPlayer(mMediaPlayer);
         }
     }
 
@@ -1262,9 +1336,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         return MediaPlayerCompat.getSelectedTrack(mMediaPlayer, trackType);
     }
 
-    public IRenderView getRenderView() {
-        return mRenderView;
-    }
 
     public int getVideoWidth() {
         return mVideoWidth;
@@ -1276,7 +1347,11 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     public void setAspectRatio(int aspectRatio) {
         this.mCurrentAspectRatio = aspectRatio;
-        if (mRenderView != null)
-            mRenderView.setAspectRatio(mCurrentAspectRatio);
+        if (mTextureView != null)
+            mTextureView.setAspectRatio(mCurrentAspectRatio);
+    }
+
+    public ImageView getIvThumb() {
+        return ivThumb;
     }
 }
