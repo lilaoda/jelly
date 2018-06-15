@@ -1,6 +1,8 @@
 package lhy.jelly.view;
 
-import android.content.Context;
+import android.view.Surface;
+
+import com.orhanobut.logger.Logger;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -17,9 +19,19 @@ public class PlayerManager {
     public static final int PV_PLAYER__IjkExoMediaPlayer = 3;
 
     private static IMediaPlayer sMediaPlayer;
-    private static VideoView3 mVideoView3;
+    private LhyVideoView mVideoView;
+    private static Surface mSurface;
 
-    public PlayerManager(Context mAppContext) {
+    private PlayerManager() {
+    }
+
+    private static PlayerManager instance;
+
+    public static synchronized PlayerManager instance() {
+        if (instance == null) {
+            instance =  new PlayerManager();
+        }
+        return instance;
     }
 
     public int getPlayer() {
@@ -32,7 +44,7 @@ public class PlayerManager {
     }
 
     // 是否后台播放
-    public boolean getEnableBackgroundPlay() {
+    public static boolean getEnableBackgroundPlay() {
         return false;
     }
 
@@ -52,13 +64,29 @@ public class PlayerManager {
         return mediaPlayer;
     }
 
-    public static void setCurrentVideoView(VideoView3 videoView) {
-        mVideoView3 = videoView;
+    public void setCurrentVideoView(LhyVideoView videoView) {
+        Logger.d("setCurrentVideoView");
+        if (mVideoView != null && mVideoView != videoView) {
+            mVideoView.release(true);
+            mVideoView = null;
+        }
+        mVideoView = videoView;
     }
 
-    public static void releaseOldView() {
-        if (mVideoView3 != null) {
-            mVideoView3.release(true);
+    public LhyVideoView getCurrenVideoView() {
+        return mVideoView;
+    }
+
+    public void releaseVideoView() {
+        if (mVideoView != null) {
+            mVideoView.release(true);
+            mVideoView = null;
+        }
+    }
+
+    public void pauseVideoView() {
+        if (mVideoView != null) {
+            mVideoView.pause();
         }
     }
 }

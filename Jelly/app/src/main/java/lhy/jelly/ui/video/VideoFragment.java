@@ -25,6 +25,8 @@ import lhy.jelly.adapter.VideoAdapter;
 import lhy.jelly.base.JellyApplicaiton;
 import lhy.jelly.bean.VideoBean;
 import lhy.jelly.util.VideoUtils;
+import lhy.jelly.view.LhyVideoView;
+import lhy.jelly.view.PlayerManager;
 import lhy.jelly.view.VideoView3;
 import lhy.lhylibrary.base.LhyFragment;
 import lhy.lhylibrary.http.RxObserver;
@@ -83,6 +85,34 @@ public class VideoFragment extends LhyFragment {
                 //videoView.setVideoPath(videoBean.getPath());
             }
         });
+        rlvVideo.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                int firstVisibleItemPosition = layout.findFirstVisibleItemPosition();
+                int lastVisibleItemPosition = layout.findLastVisibleItemPosition();
+                LhyVideoView currenVideoView = PlayerManager.instance().getCurrenVideoView();
+                if(currenVideoView !=null){
+                    int tag = (int) currenVideoView.getTag();
+                    if(tag>firstVisibleItemPosition||tag>lastVisibleItemPosition){
+                        PlayerManager.instance().releaseVideoView();
+                    }
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+//       rlvVideo.setRecyclerListener(new RecyclerView.RecyclerListener() {
+//           @Override
+//           public void onViewRecycled(RecyclerView.ViewHolder holder) {
+//               Logger.d("setRecyclerListener");
+//               VideoAdapter.VideoHolder holder1 = (VideoAdapter.VideoHolder) holder;
+//               holder1.release();
+//           }
+//       });
 
         Observable.just(VideoUtils.getList(JellyApplicaiton.getContext()))
                 .subscribeOn(Schedulers.io())

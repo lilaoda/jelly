@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package lhy.ijkplayer.media;
+package lhy.jelly.view;
 
 import android.view.View;
 import android.widget.MediaController;
 
-public interface IMediaController {
+public interface LhyMediaController {
     void hide();
 
     boolean isShowing();
-
-    void setAnchorView(View view);
 
     void setEnabled(boolean enabled);
 
@@ -40,4 +38,10 @@ public interface IMediaController {
     //----------
     void showOnce(View view);
 
+    View getView();
+
+    void showLoading();
+    void hideLoading();
+
+    void showThumb(boolean isVisable);
 }

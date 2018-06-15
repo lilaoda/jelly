@@ -4,27 +4,25 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.TextureView;
 
-import com.orhanobut.logger.Logger;
-
 import lhy.ijkplayer.media.MeasureHelper;
 
 /**
  * Created by Lihy on 2018/6/12 15:33
  * E-Mail ：liheyu999@163.com
  */
-public class VideoTextureView  extends TextureView{
+public class LhyTextureView extends TextureView{
 
     private MeasureHelper mMeasureHelper;
 
-    public VideoTextureView(Context context) {
+    public LhyTextureView(Context context) {
         this(context,null);
     }
 
-    public VideoTextureView(Context context, AttributeSet attrs) {
+    public LhyTextureView(Context context, AttributeSet attrs) {
         this(context, attrs,0);
     }
 
-    public VideoTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LhyTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context);
     }
@@ -41,7 +39,6 @@ public class VideoTextureView  extends TextureView{
     // Layout & Measure
     //--------------------
     public void setVideoSize(int videoWidth, int videoHeight) {
-        Logger.d("setVideoSize");
         if (videoWidth > 0 && videoHeight > 0) {
             mMeasureHelper.setVideoSize(videoWidth, videoHeight);
             requestLayout();

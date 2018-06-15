@@ -17,6 +17,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import lhy.jelly.R;
 import lhy.jelly.bean.VideoBean;
+import lhy.jelly.view.LhyVideoView;
+import lhy.jelly.view.PlayerManager;
 import lhy.jelly.view.VideoView3;
 
 /**
@@ -29,11 +31,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
     private Context context;
     private ItemClickListener mItemClickListener;
     private List<VideoView3> playViews = new ArrayList<>();
+    private final PlayerManager mPlayManager;
 
     public VideoAdapter(@Nullable List<VideoBean> data) {
         if (data == null) {
             data = new ArrayList<>();
         }
+        mPlayManager = PlayerManager.instance();
         mData = data;
     }
 
@@ -43,21 +47,23 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
         if (context == null) {
             context = parent.getContext();
         }
-        return new VideoHolder(LayoutInflater.from(context).inflate(R.layout.item_video, null,false));
+        return new VideoHolder(LayoutInflater.from(context).inflate(R.layout.item_video, null, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull VideoHolder holder, int position) {
         final int pos = holder.getLayoutPosition();
-        final VideoView3 videoView = holder.videoView;
+        final LhyVideoView videoView = holder.videoView;
         final VideoBean videoBean = mData.get(pos);
         Glide.with(context).load(videoBean.getThumbPath()).into(videoView.getIvThumb());
-        releaseView();
+//        releaseView();
         videoView.setVideoPath(videoBean.getPath());
+        videoView.setTag(pos);
 //        videoView.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
 //                Logger.d(videoBean);
+//                videoView.startPlay();
 //                releaseView();
 //                playViews.add(videoView);
 //                videoView.setVideoPath(videoBean.getPath());
@@ -68,13 +74,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
 //            }
 //        });
     }
-
-    private void releaseView() {
-        for (VideoView3 playView : playViews) {
-            playView.release(true);
-        }
-        playViews.clear();
-    }
+//
+//    @Override
+//    public void onViewRecycled(@NonNull VideoHolder holder) {
+//        holder.videoView.release(true);
+//        super.onViewRecycled(holder);
+//        Logger.d("onViewRecycled");
+//    }
 
     public void setNewData(List<VideoBean> value) {
         mData = value == null ? new ArrayList<VideoBean>() : value;
@@ -97,11 +103,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
     public static class VideoHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.video_view)
-        VideoView3 videoView;
+        LhyVideoView videoView;
 
         public VideoHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+        }
+
+        public void release() {
+            videoView.release(true);
         }
     }
 }

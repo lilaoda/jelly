@@ -139,8 +139,8 @@ public class VideoView3 extends FrameLayout implements MediaController.MediaPlay
     private boolean mDragging;
     //播放指示器是否正在显示
     private boolean mShowing;
-    private VideoTextureView mTextureView;
-    private SurfaceTexture mSurfaceTexture;
+    private LhyTextureView mTextureView;
+    private Surface mSurface;
 
 
     public VideoView3(@NonNull Context context) {
@@ -402,8 +402,6 @@ public class VideoView3 extends FrameLayout implements MediaController.MediaPlay
         Logger.d("doPauseResume");
         if (mMediaPlayer == null) {
             openVideo();
-            PlayerManager.releaseOldView();
-            PlayerManager.setCurrentVideoView(this);
             requestLayout();
             invalidate();
             start();
@@ -437,7 +435,7 @@ public class VideoView3 extends FrameLayout implements MediaController.MediaPlay
 //            removeView(mTextureView);
 //        }
 
-        mTextureView = new VideoTextureView(getContext());
+        mTextureView = new LhyTextureView(getContext());
         mTextureView.setAspectRatio(mCurrentAspectRatio);
         if (mVideoWidth > 0 && mVideoHeight > 0) {
             mTextureView.setVideoSize(mVideoWidth, mVideoHeight);
@@ -453,60 +451,65 @@ public class VideoView3 extends FrameLayout implements MediaController.MediaPlay
         mTextureView.setLayoutParams(lp);
         addView(mTextureView, 0);
         mTextureView.setVideoRotation(mVideoRotationDegree);
-        mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
-            @Override
-            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-                Logger.d("onSurfaceTextureAvailable");
-                mSurfaceTexture = surface;
-                if (mMediaPlayer != null) {
-                    bindMediaSurface(mMediaPlayer, surface);
-                } else {
-                    openVideo();
-                }
-            }
-
-            @Override
-            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-                Logger.d("onSurfaceTextureSizeChanged");
-                mSurfaceWidth = width;
-                mSurfaceHeight = height;
-                boolean isValidState = (mTargetState == STATE_PLAYING);
-                boolean hasValidSize = (mVideoWidth == width && mVideoHeight == height);
-                if (mMediaPlayer != null && isValidState && hasValidSize) {
-                    if (mSeekWhenPrepared != 0) {
-                        seekTo(mSeekWhenPrepared);
-                    }
-                    start();
-                }
-            }
-
-            @Override
-            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-                Logger.d("onSurfaceTextureDestroyed");
-
-                // after we return from this we can't use the surface any more
-                mSurfaceTexture = null;
-                // REMOVED: if (mMediaController != null) mMediaController.hide();
-                // REMOVED: release(true);
-                releaseWithoutStop();
-                return false;
-            }
-
-            @Override
-            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-            }
-        });
+        mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
     }
 
-    private void bindMediaSurface(IMediaPlayer mp, SurfaceTexture surface) {
+    TextureView.SurfaceTextureListener mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            Logger.d("onSurfaceTextureAvailable");
+            if (mSurface != null) {
+                mSurface.release();
+                mSurface=null;
+            }
+            mSurface = new Surface(surface);;
+            if (mMediaPlayer != null) {
+                bindMediaSurface(mMediaPlayer, mSurface);
+            } else {
+                openVideo();
+            }
+        }
+
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+            Logger.d("onSurfaceTextureSizeChanged");
+//            mSurfaceWidth = width;
+//            mSurfaceHeight = height;
+//            boolean isValidState = (mTargetState == STATE_PLAYING);
+//            boolean hasValidSize = (mVideoWidth == width && mVideoHeight == height);
+//            if (mMediaPlayer != null && isValidState && hasValidSize) {
+//                if (mSeekWhenPrepared != 0) {
+//                    seekTo(mSeekWhenPrepared);
+//                }
+//                start();
+//            }
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            Logger.d("onSurfaceTextureDestroyed");
+
+            // after we return from this we can't use the surface any more
+            mSurface = null;
+            // REMOVED: if (mMediaController != null) mMediaController.hide();
+            // REMOVED: release(true);
+            releaseWithoutStop();
+            return false;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+        }
+    };
+
+    private void bindMediaSurface(IMediaPlayer mp, Surface surface) {
         if (mp == null) {
             return;
         }
         if (surface == null) {
             mp.setDisplay(null);
         }
-        Surface surface1 = new Surface(surface);
-        mp.setSurface(surface1);
+        mp.setSurface(surface);
     }
 
 
@@ -540,7 +543,7 @@ public class VideoView3 extends FrameLayout implements MediaController.MediaPlay
     }
 
     private void openVideo() {
-        if (mUri == null || mSurfaceTexture == null) {
+        if (mUri == null || mSurface == null) {
             // not ready for playback just yet, will try again later
             return;
         }
@@ -574,7 +577,7 @@ public class VideoView3 extends FrameLayout implements MediaController.MediaPlay
                 mMediaPlayer.setDataSource(mUri.toString());
             }
 
-            bindMediaSurface(mMediaPlayer, mSurfaceTexture);
+            bindMediaSurface(mMediaPlayer, mSurface);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
             mPrepareStartTime = System.currentTimeMillis();

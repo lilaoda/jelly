@@ -47,7 +47,8 @@
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
-        <activity android:name=".ui.main.MainActivity">
+        <activity android:name=".ui.main.MainActivity"
+            android:configChanges="navigation|keyboardHidden|orientation|screenSize">
             <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
