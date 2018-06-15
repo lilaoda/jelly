@@ -27,7 +27,6 @@ import lhy.jelly.bean.VideoBean;
 import lhy.jelly.util.VideoUtils;
 import lhy.jelly.view.LhyVideoView;
 import lhy.jelly.view.PlayerManager;
-import lhy.jelly.view.VideoView3;
 import lhy.lhylibrary.base.LhyFragment;
 import lhy.lhylibrary.http.RxObserver;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -79,12 +78,12 @@ public class VideoFragment extends LhyFragment {
         rlvVideo.setLayoutManager(layout);
         mVideoAdapter = new VideoAdapter(null);
         rlvVideo.setAdapter(mVideoAdapter);
-        mVideoAdapter.setOnItemClickListener(new VideoAdapter.ItemClickListener() {
-            @Override
-            public void onClick(VideoView3 videoView, VideoBean videoBean, int pos) {
-                //videoView.setVideoPath(videoBean.getPath());
-            }
-        });
+//        mVideoAdapter.setOnItemClickListener(new VideoAdapter.ItemClickListener() {
+//            @Override
+//            public void onClick(VideoView3 videoView, VideoBean videoBean, int pos) {
+//                videoView.setVideoPath(videoBean.getPath());
+//            }
+//        });
         rlvVideo.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -92,8 +91,9 @@ public class VideoFragment extends LhyFragment {
                 int lastVisibleItemPosition = layout.findLastVisibleItemPosition();
                 LhyVideoView currenVideoView = PlayerManager.instance().getCurrenVideoView();
                 if(currenVideoView !=null){
-                    int tag = (int) currenVideoView.getTag();
-                    if(tag>firstVisibleItemPosition||tag>lastVisibleItemPosition){
+                    int tag = PlayerManager.getCurrentPos();
+                    Logger.d("tag:"+tag);
+                    if(tag<firstVisibleItemPosition||tag>lastVisibleItemPosition){
                         PlayerManager.instance().releaseVideoView();
                     }
                 }

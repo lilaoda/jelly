@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,12 +11,21 @@
         android:layout_height="match_parent"
         android:src="@mipmap/test1" />
 
-    <ImageView
-        android:id="@+id/iv_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/video_play_selector" />
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_play"-->
+    <!--android:layout_width="50dp"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:background="@drawable/video_play_selector" />-->
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#aa000000"
+        android:gravity="center_vertical|left"
+        android:text="我是标题"
+        android:textColor="@color/white" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -43,25 +52,17 @@
             android:textColor="@color/color_333" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/iv_play"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:background="@drawable/video_play_selector" />
+
     <RelativeLayout
         android:id="@+id/rl_play"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/ib_pause"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:src="@android:drawable/ic_media_play" />
-        </LinearLayout>
 
         <!--进度指示 -->
         <LinearLayout
@@ -119,4 +120,4 @@
             android:text="继续播放"
             android:textColor="@color/color_333" />
     </RelativeLayout>
-</merge>
+</FrameLayout>

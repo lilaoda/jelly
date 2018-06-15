@@ -47,7 +47,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
         if (context == null) {
             context = parent.getContext();
         }
-        return new VideoHolder(LayoutInflater.from(context).inflate(R.layout.item_video, null, false));
+        return new VideoHolder(LayoutInflater.from(context).inflate(R.layout.item_video, parent, false));
     }
 
     @Override
@@ -58,21 +58,14 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
         Glide.with(context).load(videoBean.getThumbPath()).into(videoView.getIvThumb());
 //        releaseView();
         videoView.setVideoPath(videoBean.getPath());
-        videoView.setTag(pos);
-//        videoView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Logger.d(videoBean);
-//                videoView.startPlay();
-//                releaseView();
-//                playViews.add(videoView);
-//                videoView.setVideoPath(videoBean.getPath());
-//                if (mItemClickListener != null) {
-//                    mItemClickListener.onClick(videoView, videoBean, pos);
-//
-//                }
-//            }
-//        });
+        videoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoView.play();
+                mPlayManager.setCurrentVideoView(videoView);
+                PlayerManager.setCurrentPosition(pos);
+            }
+        });
     }
 //
 //    @Override
@@ -110,8 +103,5 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoHolder>
             ButterKnife.bind(this, view);
         }
 
-        public void release() {
-            videoView.release(true);
-        }
     }
 }

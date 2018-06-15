@@ -34,8 +34,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.ViewGroup;
@@ -139,21 +137,18 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
     }
 
     private void init() {
-        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         mContainer = new FrameLayout(getContext());
         mContainer.setLayoutParams(layoutParams);
         mContainer.setBackgroundColor(Color.BLACK);
         addView(mContainer);
         addControllerView();
+        addRenderView();
     }
 
     public void addRenderView() {
+        if (mTextureView != null) return;
         mTextureView = new LhyTextureView(getContext());
-        mTextureView.setAspectRatio(mCurrentAspectRatio);
-        if (mVideoWidth > 0 && mVideoHeight > 0)
-            mTextureView.setVideoSize(mVideoWidth, mVideoHeight);
-        if (mVideoSarNum > 0 && mVideoSarDen > 0)
-            mTextureView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
         LayoutParams lp = new FrameLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT,
@@ -168,7 +163,7 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
         mMediaController = new LhyVideoController(getContext());
         LayoutParams lp = new FrameLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT);
+                LayoutParams.MATCH_PARENT, Gravity.CENTER);
         mMediaController.setLayoutParams(lp);
         mContainer.addView(mMediaController);
         mMediaController.setOnFullScreenClickListener(new LhyVideoController.OnFullScreenClickListener() {
@@ -182,8 +177,7 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
             }
         });
         mMediaController.setMediaPlayer(this);
-        mMediaController.setEnabled(false);
-        mMediaController.show(0);
+        mMediaController.updateController(LhyVideoController.STATUS_NORMAL);
     }
 
     public void setVideoPath(String path) {
@@ -258,21 +252,23 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
             // we don't set the target state here either, but preserve the
             // target state that was there before.
             mCurrentState = STATE_PREPARING;
+            mMediaController.updateController(LhyVideoController.STATUS_PREPARING);
         } catch (IOException ex) {
             Log.w(TAG, "Unable to open content: " + mUri, ex);
             mCurrentState = STATE_ERROR;
             mTargetState = STATE_ERROR;
             mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            mMediaController.updateController(STATE_ERROR);
         } catch (IllegalArgumentException ex) {
             Log.w(TAG, "Unable to open content: " + mUri, ex);
             mCurrentState = STATE_ERROR;
             mTargetState = STATE_ERROR;
             mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            mMediaController.updateController(STATE_ERROR);
         } finally {
             // REMOVED: mPendingSubtitleTracks.clear();
         }
     }
-
 
     IMediaPlayer.OnVideoSizeChangedListener mSizeChangedListener =
             new IMediaPlayer.OnVideoSizeChangedListener() {
@@ -299,11 +295,7 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
             if (mOnPreparedListener != null) {
                 mOnPreparedListener.onPrepared(mMediaPlayer);
             }
-            if (mMediaController != null) {
-//                mMediaController.showThumb(false);
-//                mMediaController.hideLoading();
-                mMediaController.setEnabled(true);
-            }
+            mMediaController.updateController(LhyVideoController.STATUS_PREDPARED);
 
             mVideoWidth = mp.getVideoWidth();
             mVideoHeight = mp.getVideoHeight();
@@ -333,10 +325,9 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
     private IMediaPlayer.OnCompletionListener mCompletionListener =
             new IMediaPlayer.OnCompletionListener() {
                 public void onCompletion(IMediaPlayer mp) {
-                    Logger.d("mCompletionListener :onCompletion");
                     mCurrentState = STATE_PLAYBACK_COMPLETED;
                     mTargetState = STATE_PLAYBACK_COMPLETED;
-                   // mMediaController.showThumb(true);
+                    mMediaController.updateController(LhyVideoController.STATUS_COMPLETED);
                     if (mOnCompletionListener != null) {
                         mOnCompletionListener.onCompletion(mMediaPlayer);
                     }
@@ -401,6 +392,7 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
                     Logger.d("mErrorListener :onError:" + framework_err + "," + impl_err);
                     mCurrentState = STATE_ERROR;
                     mTargetState = STATE_ERROR;
+                    mMediaController.updateController(LhyVideoController.STATUS_ERROR);
                     /* If an error handler has been supplied, use it and finish. */
                     if (mOnErrorListener != null) {
                         if (mOnErrorListener.onError(mMediaPlayer, framework_err, impl_err)) {
@@ -456,7 +448,6 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
         public void onSeekComplete(IMediaPlayer mp) {
             mSeekEndTime = System.currentTimeMillis();
             Log.d(TAG, "onSeekComplete: " + (mSeekEndTime - mSeekStartTime));
-
         }
     };
 
@@ -515,11 +506,13 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
      * release the media player in any state
      */
     public void release(boolean cleartargetstate) {
+        Logger.d("release");
         if (mMediaPlayer != null) {
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
 
+            mMediaController.updateController(LhyVideoController.STATUS_NORMAL);
             mCurrentState = STATE_IDLE;
             if (cleartargetstate) {
                 mTargetState = STATE_IDLE;
@@ -530,97 +523,29 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        if (isInPlaybackState() && mMediaController != null) {
-            toggleMediaControlsVisiblity();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onTrackballEvent(MotionEvent ev) {
-        if (isInPlaybackState() && mMediaController != null) {
-            toggleMediaControlsVisiblity();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        boolean isKeyCodeSupported = keyCode != KeyEvent.KEYCODE_BACK &&
-                keyCode != KeyEvent.KEYCODE_VOLUME_UP &&
-                keyCode != KeyEvent.KEYCODE_VOLUME_DOWN &&
-                keyCode != KeyEvent.KEYCODE_VOLUME_MUTE &&
-                keyCode != KeyEvent.KEYCODE_MENU &&
-                keyCode != KeyEvent.KEYCODE_CALL &&
-                keyCode != KeyEvent.KEYCODE_ENDCALL;
-        if (isInPlaybackState() && isKeyCodeSupported && mMediaController != null) {
-            if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK ||
-                    keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
-                if (mMediaPlayer.isPlaying()) {
-                    pause();
-                    mMediaController.show();
-                } else {
-                    start();
-                    mMediaController.hide();
-                }
-                return true;
-            } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
-                if (!mMediaPlayer.isPlaying()) {
-                    start();
-                    mMediaController.hide();
-                }
-                return true;
-            } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP
-                    || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
-                if (mMediaPlayer.isPlaying()) {
-                    pause();
-                    mMediaController.show();
-                }
-                return true;
-            } else {
-                toggleMediaControlsVisiblity();
-            }
-        }
-
-        return super.onKeyDown(keyCode, event);
-    }
-
-    private void toggleMediaControlsVisiblity() {
-        if (mMediaController.isShowing()) {
-            mMediaController.hide();
-        } else {
-            mMediaController.show();
-        }
-    }
-
-    @Override
     public void start() {
+        Logger.d("isInPlaybackState:"+isInPlaybackState());
         if (isInPlaybackState()) {
             mMediaPlayer.start();
             mCurrentState = STATE_PLAYING;
+            mMediaController.updateController(LhyVideoController.STATUS_PLAYING);
         }
         mTargetState = STATE_PLAYING;
     }
 
     @Override
     public void pause() {
+        Logger.d("isInPlaybackState:"+isInPlaybackState());
         if (isInPlaybackState()) {
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentState = STATE_PAUSED;
+                mMediaController.updateController(LhyVideoController.STATUS_PAUSE);
             }
         }
         mTargetState = STATE_PAUSED;
     }
 
-    public void suspend() {
-        release(false);
-    }
-
-    public void resume() {
-        openVideo();
-    }
 
     @Override
     public int getDuration() {
@@ -721,9 +646,10 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
         mSurface = new Surface(surface);
         if (mMediaPlayer != null) {
             bindMediaSurface(mMediaPlayer, mSurface);
-        } else {
-            openVideo();
         }
+//        else {
+//            openVideo();
+//        }
     }
 
     @Override
@@ -777,14 +703,9 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
         NiceUtil.hideActionBar(getContext());
         Activity activity = NiceUtil.scanForActivity(getContext());
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        ViewGroup contentView = (ViewGroup) activity.findViewById(android.R.id.content);
-
+        ViewGroup contentView = activity.findViewById(android.R.id.content);
         oldParams = new LayoutParams(mContainer.getLayoutParams());
         removeView(mContainer);
-//        ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
-//        layoutParams.width = mWindowManager.getDefaultDisplay().getWidth();
-//        layoutParams.height = mWindowManager.getDefaultDisplay().getHeight();
-//        mContainer.setLayoutParams(layoutParams);
         contentView.addView(mContainer);
         isFullScreen = true;
     }
@@ -793,7 +714,7 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
         NiceUtil.hideActionBar(getContext());
         Activity activity = NiceUtil.scanForActivity(getContext());
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        ViewGroup contentView = (ViewGroup) activity.findViewById(android.R.id.content);
+        ViewGroup contentView = activity.findViewById(android.R.id.content);
         contentView.removeView(mContainer);
         addView(mContainer);
         isFullScreen = false;
@@ -802,8 +723,11 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
     //first play
     public void play() {
         if (mMediaPlayer == null) {
-            addRenderView();
-            PlayerManager.instance().setCurrentVideoView(this);
+            //第一次播放
+            openVideo();
+        } else if (isInPlaybackState()) {
+            //播放完成后再次播放
+            start();
         }
         mTargetState = STATE_PLAYING;
     }

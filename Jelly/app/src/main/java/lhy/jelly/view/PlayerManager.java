@@ -1,8 +1,6 @@
 package lhy.jelly.view;
 
-import android.view.Surface;
-
-import com.orhanobut.logger.Logger;
+import android.util.SparseArray;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -19,8 +17,9 @@ public class PlayerManager {
     public static final int PV_PLAYER__IjkExoMediaPlayer = 3;
 
     private static IMediaPlayer sMediaPlayer;
+    private static int mCurrentPos = -9;
     private LhyVideoView mVideoView;
-    private static Surface mSurface;
+    private SparseArray<LhyVideoView> mVideos = new SparseArray<>();
 
     private PlayerManager() {
     }
@@ -29,7 +28,7 @@ public class PlayerManager {
 
     public static synchronized PlayerManager instance() {
         if (instance == null) {
-            instance =  new PlayerManager();
+            instance = new PlayerManager();
         }
         return instance;
     }
@@ -65,28 +64,33 @@ public class PlayerManager {
     }
 
     public void setCurrentVideoView(LhyVideoView videoView) {
-        Logger.d("setCurrentVideoView");
-        if (mVideoView != null && mVideoView != videoView) {
-            mVideoView.release(true);
-            mVideoView = null;
+        if (mVideos.size() > 0) {
+            LhyVideoView lhyVideoView = mVideos.get(0);
+            if (lhyVideoView != videoView) {
+                lhyVideoView.release(true);
+            }
         }
-        mVideoView = videoView;
+        if (videoView == null) {
+            mVideos.clear();
+            return;
+        }
+        mVideos.put(0, videoView);
     }
 
     public LhyVideoView getCurrenVideoView() {
-        return mVideoView;
+        return mVideos.size() > 0 ? mVideos.get(0) : null;
     }
 
     public void releaseVideoView() {
-        if (mVideoView != null) {
-            mVideoView.release(true);
-            mVideoView = null;
-        }
+        if (mVideos.size() > 0)
+            mVideos.get(0).release(true);
     }
 
-    public void pauseVideoView() {
-        if (mVideoView != null) {
-            mVideoView.pause();
-        }
+    public static void setCurrentPosition(int pos) {
+        mCurrentPos = pos;
+    }
+
+    public static int getCurrentPos() {
+        return mCurrentPos;
     }
 }
