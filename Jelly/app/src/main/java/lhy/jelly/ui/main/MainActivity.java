@@ -1,112 +1,63 @@
 package lhy.jelly.ui.main;
 
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationItemView;
+import android.support.design.internal.BottomNavigationMenuView;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.MenuItem;
 
-import com.orhanobut.logger.Logger;
-
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import lhy.jelly.R;
-import lhy.jelly.base.BaseActivity;
-import lhy.jelly.bean.TabBean;
-import lhy.jelly.data.local.entity.User;
+import lhy.jelly.base.AbstractDiActivity;
 import lhy.jelly.ui.chat.ChatFragment;
 import lhy.jelly.ui.mine.MineFragment;
 import lhy.jelly.ui.music.MusicFragment;
 import lhy.jelly.ui.video.VideoFragment;
-import lhy.lhylibrary.base.LhyFragment;
-import lhy.lhylibrary.view.tablayout.CommonTabLayout;
-import lhy.lhylibrary.view.tablayout.listener.CustomTabEntity;
-import lhy.lhylibrary.view.tablayout.listener.OnTabSelectListener;
 
 /**
  * Created by Lilaoda on 2018/3/28.
  * Email:749948218@qq.com
  */
 
-public class MainActivity extends BaseActivity  {
+public class MainActivity extends AbstractDiActivity {
 
     @BindView(R.id.navigationView)
     NavigationView navigationView;
     @BindView(R.id.drawlayout)
     DrawerLayout drawlayout;
-    @BindView(R.id.tabLayout)
-    CommonTabLayout tabLayout;
+    @BindView(R.id.bottom_view)
+    BottomNavigationView bottomNavigationView;
 
-    @Inject
-    User user;
-
-    private ArrayList<Fragment> mFragment;
-    private ArrayList<CustomTabEntity> mTabEntitys;
-    private String[] mTitles = {"音乐", "视频", "社区", "工具"};
-    private int[] mIconUnselectIds = {
-            R.mipmap.home_normal, R.drawable.ic_music_note_black_24dp,
-            R.mipmap.home_normal, R.mipmap.home_normal,};
-    private int[] mIconSelectIds = {
-            R.mipmap.home_pressed, R.drawable.ic_music_note_black_24dp,
-            R.mipmap.home_pressed, R.mipmap.home_pressed};
+    private ArrayList<Fragment> mFragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        if(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP){
-            setupWindowAnimations();
-        }
+        initFragments();
         initView();
-        initListener();
-        Logger.d(user);
     }
 
-    @TargetApi(value = 21)
-    //上一页面启动时以动画形式启动才有效果
-    private void setupWindowAnimations() {
-//        (1)setExitTransition() - 当A start B时，使A中的View退出场景的transition
-//                (2)setEnterTransition() - 当A start B时，使B中的View进入场景的transition
-//                (3)setReturnTransition() - 当B 返回 A时，使B中的View退出场景的transition
-////                (4)setReenterTransition() - 当B 返回 A时，使A中的View进入场景的transition
-        Slide slide = new Slide();
-        slide.setSlideEdge(Gravity.LEFT);
-        slide.setDuration(1000);
-//        getWindow().setEnterTransition(slide);
-//        getWindow().setReturnTransition(slide);
-
-        Explode explode = new Explode();
-        explode.setDuration(1000);
-//        explode.setMode(Explode.MODE_OUT);//系统默认进去时IN 出去时OUT.其它slide fade也是一样的
-//        getWindow().setEnterTransition(explode);
-//        getWindow().setReturnTransition(explode);
-
-        Fade fade = new Fade();
-        fade.setDuration(1000);
-        getWindow().setEnterTransition(fade);
-        getWindow().setReturnTransition(fade);
-
-        TransitionSet transitionSet = new TransitionSet();
-//        transitionSet.addTransition(slide);
-//        transitionSet.addTransition(explode);
-//        getWindow().setEnterTransition(transitionSet);
-//        getWindow().setReturnTransition(transitionSet);
+    private void initFragments() {
+        mFragments = new ArrayList<>();
+        mFragments.add(MusicFragment.newInstance());
+        mFragments.add(VideoFragment.newInstance());
+        mFragments.add(ChatFragment.newInstance());
+        mFragments.add(MineFragment.newInstance());
     }
-
 
     private void initView() {
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawlayout, R.string.draw_open, R.string.draw_close);
@@ -123,40 +74,78 @@ public class MainActivity extends BaseActivity  {
                     case R.id.item2:
                         drawlayout.closeDrawers();
                         break;
+                    default:
+                        break;
                 }
                 return true;
             }
         });
 
-        mFragment = new ArrayList<>();
-        mFragment.add(MusicFragment.newInstance());
-        mFragment.add(VideoFragment.newInstance());
-        mFragment.add(ChatFragment.newInstance());
-        mFragment.add(MineFragment.newInstance());
-
-        mTabEntitys = new ArrayList<>();
-        for (int i = 0; i < mTitles.length; i++) {
-            mTabEntitys.add(new TabBean(mTitles[i], mIconSelectIds[i], mIconUnselectIds[i]));
-        }
-        tabLayout.setTabData(mTabEntitys, this, R.id.fl_content, mFragment);
-    }
-
-    private void initListener() {
-        tabLayout.setOnTabSelectListener(new OnTabSelectListener() {
+        disableShiftMode(bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onTabSelect(int position) {
-            }
-
-            @Override
-            public void onTabReselect(int position) {
-
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.music:
+                        navigationFragment(0);
+                        break;
+                    case R.id.video:
+                        navigationFragment(1);
+                        break;
+                    case R.id.chat:
+                        navigationFragment(2);
+                        break;
+                    case R.id.setting:
+                        navigationFragment(3);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
+        bottomNavigationView.getMenu().getItem(0).setChecked(true);
+        getSupportFragmentManager().beginTransaction().add(R.id.fl_content, mFragments.get(0)).commit();
+
+//        BottomNavigationMenuView menuView = (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
+//        new QBadgeView(bottomNavigationView.getContext()).bindTarget(menuView.getChildAt(2)).setBadgeNumber(5).setGravityOffset(10, 0, true);
     }
 
-    private void navigateToFragment(LhyFragment fragment) {
-//        getFragmentManager().beginTransaction().replace()
+    private int mCurrentItemPostion = 0;
+
+    private void navigationFragment(int position) {
+        if (mCurrentItemPostion != position) {
+            Fragment fragment = mFragments.get(position);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.hide(mFragments.get(mCurrentItemPostion));
+            if (fragment.isAdded()) {
+                fragmentTransaction.show(fragment);
+            } else {
+                fragmentTransaction.add(R.id.fl_content, fragment);
+            }
+            fragmentTransaction.commit();
+            mCurrentItemPostion = position;
+        }
     }
 
+    @SuppressLint("RestrictedApi")
+    public static void disableShiftMode(BottomNavigationView view) {
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView) view.getChildAt(0);
+        try {
+            Field shiftingMode = menuView.getClass().getDeclaredField("mShiftingMode");
+            shiftingMode.setAccessible(true);
+            shiftingMode.setBoolean(menuView, false);
+            shiftingMode.setAccessible(false);
+            for (int i = 0; i < menuView.getChildCount(); i++) {
+                BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
+                item.setShiftingMode(false);
+                item.setChecked(item.getItemData().isChecked());
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 }
 

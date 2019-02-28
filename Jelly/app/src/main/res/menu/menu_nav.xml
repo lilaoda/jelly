@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/music"
+        android:icon="@drawable/ic_music_note_black_24dp"
+        android:title="music"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/video"
+        android:icon="@drawable/ic_ondemand_video_black_24dp"
+        android:title="video"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/chat"
+        android:icon="@drawable/ic_contact_mail_black_24dp"
+        android:title="chat"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/setting"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="setting"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -1,7 +1,5 @@
 package lhy.jelly.view;
 
-import android.util.SparseArray;
-
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
@@ -19,7 +17,6 @@ public class PlayerManager {
     private static IMediaPlayer sMediaPlayer;
     private static int mCurrentPos = -9;
     private LhyVideoView mVideoView;
-    private SparseArray<LhyVideoView> mVideos = new SparseArray<>();
 
     private PlayerManager() {
     }
@@ -64,26 +61,22 @@ public class PlayerManager {
     }
 
     public void setCurrentVideoView(LhyVideoView videoView) {
-        if (mVideos.size() > 0) {
-            LhyVideoView lhyVideoView = mVideos.get(0);
-            if (lhyVideoView != videoView) {
-                lhyVideoView.release(true);
-            }
+        if (mVideoView != null && mVideoView != videoView) {
+            mVideoView.release(true);
+            mVideoView = null;
         }
-        if (videoView == null) {
-            mVideos.clear();
-            return;
-        }
-        mVideos.put(0, videoView);
+        mVideoView = videoView;
     }
 
     public LhyVideoView getCurrenVideoView() {
-        return mVideos.size() > 0 ? mVideos.get(0) : null;
+        return mVideoView;
     }
 
     public void releaseVideoView() {
-        if (mVideos.size() > 0)
-            mVideos.get(0).release(true);
+        if (mVideoView != null) {
+            mVideoView.release(true);
+            mVideoView = null;
+        }
     }
 
     public static void setCurrentPosition(int pos) {
@@ -92,5 +85,23 @@ public class PlayerManager {
 
     public static int getCurrentPos() {
         return mCurrentPos;
+    }
+
+    public void onPause(){
+        if (mVideoView != null) {
+            mVideoView.pause();
+        }
+    }
+
+    public void onResume(){
+        if (mVideoView != null) {
+            mVideoView.resume();
+        }
+    }
+
+    public void release(){
+        if (mVideoView != null) {
+            mVideoView.release(true);
+        }
     }
 }

@@ -25,7 +25,12 @@ public class UserDao extends AbstractDao<User, Void> {
      */
     public static class Properties {
         public final static Property Name = new Property(0, String.class, "name", false, "NAME");
-        public final static Property Phone = new Property(1, String.class, "phone", false, "PHONE");
+        public final static Property Age = new Property(1, int.class, "age", false, "AGE");
+        public final static Property Account = new Property(2, String.class, "account", false, "ACCOUNT");
+        public final static Property Password = new Property(3, String.class, "password", false, "PASSWORD");
+        public final static Property Sex = new Property(4, String.class, "sex", false, "SEX");
+        public final static Property Token = new Property(5, String.class, "token", false, "TOKEN");
+        public final static Property Phone = new Property(6, String.class, "phone", false, "PHONE");
     }
 
     private DaoSession daoSession;
@@ -45,7 +50,12 @@ public class UserDao extends AbstractDao<User, Void> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"_user\" (" + //
                 "\"NAME\" TEXT," + // 0: name
-                "\"PHONE\" TEXT);"); // 1: phone
+                "\"AGE\" INTEGER NOT NULL ," + // 1: age
+                "\"ACCOUNT\" TEXT UNIQUE ," + // 2: account
+                "\"PASSWORD\" TEXT," + // 3: password
+                "\"SEX\" TEXT," + // 4: sex
+                "\"TOKEN\" TEXT," + // 5: token
+                "\"PHONE\" TEXT);"); // 6: phone
     }
 
     /** Drops the underlying database table. */
@@ -62,10 +72,31 @@ public class UserDao extends AbstractDao<User, Void> {
         if (name != null) {
             stmt.bindString(1, name);
         }
+        stmt.bindLong(2, entity.getAge());
+ 
+        String account = entity.getAccount();
+        if (account != null) {
+            stmt.bindString(3, account);
+        }
+ 
+        String password = entity.getPassword();
+        if (password != null) {
+            stmt.bindString(4, password);
+        }
+ 
+        String sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindString(5, sex);
+        }
+ 
+        String token = entity.getToken();
+        if (token != null) {
+            stmt.bindString(6, token);
+        }
  
         String phone = entity.getPhone();
         if (phone != null) {
-            stmt.bindString(2, phone);
+            stmt.bindString(7, phone);
         }
     }
 
@@ -77,10 +108,31 @@ public class UserDao extends AbstractDao<User, Void> {
         if (name != null) {
             stmt.bindString(1, name);
         }
+        stmt.bindLong(2, entity.getAge());
+ 
+        String account = entity.getAccount();
+        if (account != null) {
+            stmt.bindString(3, account);
+        }
+ 
+        String password = entity.getPassword();
+        if (password != null) {
+            stmt.bindString(4, password);
+        }
+ 
+        String sex = entity.getSex();
+        if (sex != null) {
+            stmt.bindString(5, sex);
+        }
+ 
+        String token = entity.getToken();
+        if (token != null) {
+            stmt.bindString(6, token);
+        }
  
         String phone = entity.getPhone();
         if (phone != null) {
-            stmt.bindString(2, phone);
+            stmt.bindString(7, phone);
         }
     }
 
@@ -99,7 +151,12 @@ public class UserDao extends AbstractDao<User, Void> {
     public User readEntity(Cursor cursor, int offset) {
         User entity = new User( //
             cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // name
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1) // phone
+            cursor.getInt(offset + 1), // age
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // account
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // password
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // sex
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // token
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // phone
         );
         return entity;
     }
@@ -107,7 +164,12 @@ public class UserDao extends AbstractDao<User, Void> {
     @Override
     public void readEntity(Cursor cursor, User entity, int offset) {
         entity.setName(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setPhone(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setAge(cursor.getInt(offset + 1));
+        entity.setAccount(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setPassword(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setSex(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setToken(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setPhone(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
      }
     
     @Override

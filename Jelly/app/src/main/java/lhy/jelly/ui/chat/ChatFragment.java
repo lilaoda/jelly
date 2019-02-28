@@ -1,35 +1,44 @@
 package lhy.jelly.ui.chat;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+
+import com.netease.nim.uikit.business.contact.ContactsFragment;
+import com.netease.nim.uikit.business.recent.RecentContactsFragment;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import lhy.jelly.R;
-import lhy.jelly.ui.activity.MapActivity;
-import lhy.lhylibrary.activity.ShowPhotoActivity;
-import lhy.lhylibrary.base.LhyFragment;
-import me.nereo.multi_image_selector.MultiImageSelector;
+import lhy.jelly.adapter.ChatAdapter;
+import lhy.jelly.base.BaseFragment;
 
 /**
  * Created by Liheyu on 2017/8/21.
  * Email:liheyu999@163.com
  */
 
-public class ChatFragment extends LhyFragment {
+public class ChatFragment extends BaseFragment {
 
-    private ArrayList<String> mPhotoList;
+    @BindView(R.id.tabLayout)
+    TabLayout tabLayout;
+    @BindView(R.id.view_pager)
+    ViewPager viewPager;
+
+    Unbinder unbinder;
+    private ArrayList<Fragment> fragments;
+    private ArrayList<String> mTitles;
 
     public static ChatFragment newInstance() {
-
         Bundle args = new Bundle();
-
         ChatFragment fragment = new ChatFragment();
         fragment.setArguments(args);
         return fragment;
@@ -39,35 +48,36 @@ public class ChatFragment extends LhyFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, null);
-        Button button = (Button) view.findViewById(R.id.btn_photo);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               // openAlbum();
-                startActivity(new Intent(getActivity(), MapActivity.class));
-            }
-        });
-
+        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
-    private void openAlbum() {
-        MultiImageSelector.create()
-                .showCamera(true)
-                .count(6)
-                .multi()
-                .origin(mPhotoList) // original select data set, used width #.multi()
-                .start(this, 999);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initData();
+        initView();
+    }
+
+    private void initData() {
+        fragments = new ArrayList<>();
+        fragments.add(new RecentContactsFragment());
+        fragments.add(new ContactsFragment());
+        mTitles = new ArrayList<>();
+        mTitles.add("会话");
+        mTitles.add("联系人");
+    }
+
+    private void initView() {
+        viewPager.setAdapter(new ChatAdapter(getFragmentManager(), fragments, mTitles));
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==999&&resultCode== Activity.RESULT_OK){
-            ArrayList<String> list = data.getStringArrayListExtra(MultiImageSelector.EXTRA_RESULT);
-            Intent intent = new Intent(getActivity(), ShowPhotoActivity.class).putStringArrayListExtra(ShowPhotoActivity.PHOTO_LIST, list);
-            intent.putExtra(ShowPhotoActivity.PHOTO_CURRENT_POSITION,3);
-            startActivity(intent);
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
+
+
 }

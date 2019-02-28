@@ -41,21 +41,21 @@
         android:theme="@style/AppTheme"
         tools:replace="android:icon,android:theme,android:allowBackup">
         <activity android:name=".ui.login.LoginActivity">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".ui.main.MainActivity"
             android:configChanges="navigation|keyboardHidden|orientation|screenSize">
-            <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
-        <activity android:name=".ui.activity.MapActivity" />
+        <activity android:name=".ui.map.MapActivity" />
         <activity android:name=".ui.music.MusicPlayActivity" android:theme="@style/TransitionsTheme"/>
         <activity android:name=".ui.video.PlayVidoActivity"
             android:configChanges="navigation|keyboardHidden|orientation|screenSize">
@@ -85,7 +85,7 @@
            如果 SDKOptions 中提供了，取 SDKOptions 中的值。 -->
         <meta-data
             android:name="com.netease.nim.appKey"
-            android:value="key_of_your_app" />
+            android:value="f821e57ba587e5f5518f89a1634cae75" />
 
         <!-- 云信后台服务，请使用独立进程。 -->
         <service

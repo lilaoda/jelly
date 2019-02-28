@@ -30,12 +30,13 @@ public class GlideCacheUtils {
     public void clearImageDiskCache(final Context context) {
         try {
             if (Looper.myLooper() == Looper.getMainLooper()) {
-                new Thread(new Runnable() {
+                ThreadManager threadManager = new ThreadManager();
+                threadManager.createSmallThradPool().execute(new Runnable() {
                     @Override
                     public void run() {
                         Glide.get(context).clearDiskCache();
                     }
-                }).start();
+                });
             } else {
                 Glide.get(context).clearDiskCache();
             }
@@ -63,8 +64,8 @@ public class GlideCacheUtils {
     public void clearAllImgCache(Context context) {
         clearImageDiskCache(context);
         clearImageMemoryCache(context);
-        String ImageExternalCatchDir = context.getExternalCacheDir() + ExternalCacheDiskCacheFactory.DEFAULT_DISK_CACHE_DIR;
-        deleteFolderFile(ImageExternalCatchDir, true);
+        String imageExternalCatchDir = context.getExternalCacheDir() + ExternalCacheDiskCacheFactory.DEFAULT_DISK_CACHE_DIR;
+        deleteFolderFile(imageExternalCatchDir, true);
     }
 
     /**

@@ -30,8 +30,9 @@ public class MusicUtils {
         for (int i = 0; i < cursor.getCount(); i++) {
             //新建一个歌曲对象,将从cursor里读出的信息存放进去,直到取完cursor里面的内容为止.
             cursor.moveToNext();
+            //音乐id
             long id = cursor.getLong(cursor
-                    .getColumnIndex(MediaStore.Audio.Media._ID));   //音乐id
+                    .getColumnIndex(MediaStore.Audio.Media._ID));
 
             String title = cursor.getString((cursor
                     .getColumnIndex(MediaStore.Audio.Media.TITLE)));//音乐标题

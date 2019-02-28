@@ -5,5 +5,5 @@ package lhy.jelly.base;
  * E-Mail ：liheyu999@163.com
  */
 public class Constant {
-    public static final String API_SERVER="http://192.168.8.64:8085/";
+    public static final String API_SERVER="http://192.168.8.101:8085/";
 }

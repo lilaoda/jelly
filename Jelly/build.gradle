@@ -7,7 +7,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.1.3'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
 //        classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
 
@@ -22,6 +22,7 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://maven.google.com" }
+        maven { url 'https://dl.bintray.com/umsdk/release' }
         google()
     }
 }
@@ -29,6 +30,21 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    compileSdkVersion = 26
+    buildToolsVersion = '27.0.3'
+    minSdkVersion = 16
+    targetSdkVersion = 26
+    appTargetSdkVersion = 26
+    versionCode = 1
+    versionName = '1.0'
+    sdkSourceCompatibility = 1.7
+    sdkTargetCompatibility = 1.7
+    appSourceCompatibility = 1.7
+    appTargetCompatibility = 1.7
+}
+
 subprojects {
     project.configurations.all {
         resolutionStrategy.eachDependency { details ->

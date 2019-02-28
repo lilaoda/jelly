@@ -9,24 +9,25 @@ import dagger.Module;
 import dagger.Provides;
 import lhy.jelly.data.DbManager;
 import lhy.jelly.data.HttpManager;
-import lhy.jelly.data.local.entity.User;
 import lhy.jelly.data.local.gen.UserDao;
 import lhy.jelly.data.remote.ApiService;
 
 /**
  * Created by Lilaoda on 2018/3/29.
  * Email:749948218@qq.com
+ *
+ * @author lhy
  */
 
-@Module
-public  class AppModule {
-
+@Singleton
+@Module(includes = ViewModelModule.class)
+public class AppModule {
 
     @Singleton
     @Provides
-    public  Context provideContext(Application applicaiton){
-        return  applicaiton;
-    };
+    public Context provideContext(Application applicaiton) {
+        return applicaiton;
+    }
 
     @Singleton
     @Provides
@@ -46,9 +47,4 @@ public  class AppModule {
         return dbManager.getUserDao();
     }
 
-    @Singleton
-    @Provides
-    public User provideUser() {
-        return new User();
-    }
 }

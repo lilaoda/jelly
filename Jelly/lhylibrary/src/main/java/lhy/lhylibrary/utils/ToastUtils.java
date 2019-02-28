@@ -1,5 +1,6 @@
 package lhy.lhylibrary.utils;
 
+import android.support.annotation.StringRes;
 import android.widget.Toast;
 
 import lhy.lhylibrary.base.LhyApplication;
@@ -16,7 +17,7 @@ public class ToastUtils {
         toast.show();
     }
 
-    public static void showInt(int resId) {
+    public static void showString(@StringRes int resId) {
         Toast.makeText(LhyApplication.getContext(), resId, Toast.LENGTH_SHORT).show();
     }
 

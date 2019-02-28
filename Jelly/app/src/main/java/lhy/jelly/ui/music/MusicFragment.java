@@ -1,10 +1,13 @@
 package lhy.jelly.ui.music;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,38 +17,35 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.orhanobut.logger.Logger;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import lhy.jelly.R;
 import lhy.jelly.adapter.MusicAdapter;
+import lhy.jelly.base.AbstractDiFragment;
 import lhy.jelly.bean.MusicBean;
-import lhy.jelly.data.local.entity.User;
-import lhy.jelly.di.Injectable;
-import lhy.jelly.util.MusicUtils;
-import lhy.lhylibrary.base.LhyFragment;
+import lhy.lhylibrary.http.RxObserver;
+import lhy.lhylibrary.utils.ToastUtils;
 
 /**
  * Created by Liheyu on 2017/8/21.
  * Email:liheyu999@163.com
  */
 
-public class MusicFragment extends LhyFragment implements Injectable {
+public class MusicFragment extends AbstractDiFragment  {
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -54,12 +54,18 @@ public class MusicFragment extends LhyFragment implements Injectable {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
+//    private CompositeDisposable mDisposables = new CompositeDisposable();
+
     private Unbinder unbinder;
     private MusicAdapter mMusicAdapter;
-    private MediaPlayer mMediaPlayer;
+    private MusicModel musicModel;
+    private View mLoadingView;
+    private View mEmptyView;
+    private View mErrorView;
 
-    @Inject
-    User user;
 
     public static MusicFragment newInstance() {
         Bundle args = new Bundle();
@@ -70,67 +76,82 @@ public class MusicFragment extends LhyFragment implements Injectable {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_music, null);
         unbinder = ButterKnife.bind(this, view);
         toolbar.setTitle("music");
-        initView();
+        mLoadingView = getLayoutInflater().inflate(R.layout.view_loading, (ViewGroup) recyclerView.getParent(), false);
+        mEmptyView = getLayoutInflater().inflate(R.layout.view_empty, (ViewGroup) recyclerView.getParent(), false);
+        mErrorView = getLayoutInflater().inflate(R.layout.view_error, (ViewGroup) recyclerView.getParent(), false);
         return view;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initView();
+        musicModel = ViewModelProviders.of(this, viewModelFactory).get(MusicModel.class);
+    }
+
     private void doRefresh() {
-        Disposable subscribe = Flowable.timer(2, TimeUnit.SECONDS).take(1).observeOn(AndroidSchedulers.mainThread())
-                .compose(MusicFragment.this.<Long>bindToLifecycle())
-                .subscribe(new Consumer<Long>() {
+        mMusicAdapter.setEmptyView(mLoadingView);
+        RxPermissions rxPermissions = new RxPermissions(getActivity());
+        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(new Consumer<Boolean>() {
                     @Override
-                    public void accept(@NonNull Long aLong) throws Exception {
-                        Logger.d("doRefresh  doRefresh");
-                        List<MusicBean> mList = MusicUtils.getMp3Infos(requireContext());
-                        mMusicAdapter.setNewData(mList);
+                    public void accept(Boolean aBoolean) throws Exception {
+                       if(aBoolean){
+                           scanMusic();
+                       }else {
+                           ToastUtils.showString("无读写SD卡权限");
+                       }
+                    }
+                });
+    }
+
+    private void scanMusic() {
+        Observable.just(musicModel.getMusicList(getContext()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<List<MusicBean>>bindToLifecycle())
+                .subscribe(new RxObserver<List<MusicBean>>() {
+                    @Override
+                    public void onSuccess(List<MusicBean> value) {
+                        if (value == null || value.size() == 0) {
+                            mMusicAdapter.setEmptyView(mEmptyView);
+                        } else {
+                            mMusicAdapter.setNewData(value);
+                        }
+                        refreshLayout.finishRefresh();
+                    }
+
+                    @Override
+                    public void onFailure(String msg) {
+                        mMusicAdapter.setEmptyView(mErrorView);
                         refreshLayout.finishRefresh();
                     }
                 });
     }
 
-    private void doLoadMore() {
-        Disposable subscribe = Flowable.timer(2, TimeUnit.SECONDS).take(1).observeOn(AndroidSchedulers.mainThread())
-                .compose(MusicFragment.this.<Long>bindToLifecycle())
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(@NonNull Long aLong) throws Exception {
-                        Logger.d("doLoadMore  doRefresh");
-//                                refreshLayout.setLoadmoreFinished(false);
-//                        refreshLayout.finishLoadMore();
-                        refreshLayout.finishLoadMoreWithNoMoreData();
-                    }
-                });
-    }
 
     private void initView() {
-        List<MusicBean> mList = MusicUtils.getMp3Infos(requireContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mMusicAdapter = new MusicAdapter(mList);
+        mMusicAdapter = new MusicAdapter(null);
         recyclerView.setAdapter(mMusicAdapter);
         mMusicAdapter.enableSwipeItem();
         mMusicAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 View shareView = view.findViewById(R.id.img_music);
-                Logger.d(mMusicAdapter.getData().get(position));
                 gotoPlayMusic(shareView);
             }
         });
 
         refreshLayout.setEnableRefresh(true);
-        refreshLayout.setEnableLoadMore(true);
-        refreshLayout.setEnableLoadMoreWhenContentNotFull(false);
+        refreshLayout.setEnableLoadMore(false);
         refreshLayout.setEnableOverScrollDrag(false);
-        refreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
-            @Override
-            public void onLoadMore(RefreshLayout refreshLayout) {
-                doLoadMore();
-            }
-
+        refreshLayout.autoRefresh();
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshLayout) {
                 doRefresh();
@@ -141,7 +162,7 @@ public class MusicFragment extends LhyFragment implements Injectable {
     @TargetApi(value = 21)
     private void gotoPlayMusic(View view) {
         ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, "name");
-        startActivity(new Intent(getActivity(),MusicPlayActivity.class),activityOptions.toBundle());
+        startActivity(new Intent(getActivity(), MusicPlayActivity.class), activityOptions.toBundle());
     }
 
     @Override

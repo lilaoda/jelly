@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import lhy.lhylibrary.http.exception.AppCrashException;
+
 
 public class LhyApplication extends Application {
 
@@ -25,14 +27,15 @@ public class LhyApplication extends Application {
         super.onCreate();
         instance = this;
         context = getApplicationContext();
-        //AppCrashException.init();
+        AppCrashException.init();
     }
 
     public LhyActivity getCurrentActivity() {
-        if (activitys.size() == 0) return null;
+        if (activitys.size() == 0) {
+            return null;
+        }
         return activitys.get(activitys.size() - 1);
     }
-
 
     public void addActivity(LhyActivity activity) {
         activitys.add(activity);
@@ -40,6 +43,14 @@ public class LhyApplication extends Application {
 
     public void removeActivity(LhyActivity activity) {
         activitys.remove(activity);
+    }
+
+    public void addService(Service service) {
+        services.add(service);
+    }
+
+    public void removeService(Service service) {
+        services.remove(service);
     }
 
     public void closeApplication() {

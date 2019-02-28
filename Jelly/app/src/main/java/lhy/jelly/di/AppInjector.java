@@ -2,6 +2,7 @@ package lhy.jelly.di;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -69,14 +70,24 @@ public class AppInjector {
         if (activity instanceof FragmentActivity) {
             ((FragmentActivity) activity).getSupportFragmentManager()
                     .registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+
                         @Override
-                        public void onFragmentCreated(FragmentManager fm, Fragment f, Bundle savedInstanceState) {
-                            super.onFragmentCreated(fm, f, savedInstanceState);
+                        public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
+                            super.onFragmentAttached(fm, f, context);
                             if (f instanceof Injectable) {
                                 AndroidSupportInjection.inject(f);
                             }
                         }
+
+//                        @Override
+//                        public void onFragmentCreated(FragmentManager fm, Fragment f, Bundle savedInstanceState) {
+//                            super.onFragmentCreated(fm, f, savedInstanceState);
+//                            if (f instanceof Injectable) {
+//                                AndroidSupportInjection.inject(f);
+//                            }
+//                        }
                     }, true);
         }
     }
+
 }

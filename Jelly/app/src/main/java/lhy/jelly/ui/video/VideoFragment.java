@@ -1,5 +1,6 @@
 package lhy.jelly.ui.video;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,8 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
-import com.orhanobut.logger.Logger;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.List;
 
@@ -19,24 +19,23 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import lhy.jelly.R;
 import lhy.jelly.adapter.VideoAdapter;
+import lhy.jelly.base.AbstractDiFragment;
 import lhy.jelly.base.JellyApplicaiton;
 import lhy.jelly.bean.VideoBean;
 import lhy.jelly.util.VideoUtils;
-import lhy.jelly.view.LhyVideoView;
-import lhy.jelly.view.PlayerManager;
-import lhy.lhylibrary.base.LhyFragment;
 import lhy.lhylibrary.http.RxObserver;
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+import lhy.lhylibrary.utils.ToastUtils;
 
 /**
  * Created by Liheyu on 2017/8/21.
  * Email:liheyu999@163.com
  */
 
-public class VideoFragment extends LhyFragment {
+public class VideoFragment extends AbstractDiFragment {
 
     @BindView(R.id.rlv_video)
     RecyclerView rlvVideo;
@@ -45,6 +44,7 @@ public class VideoFragment extends LhyFragment {
     Toolbar toolbar;
 
     private VideoAdapter mVideoAdapter;
+    private View mView;
 
     public static VideoFragment newInstance() {
 
@@ -58,19 +58,13 @@ public class VideoFragment extends LhyFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_video, container, false);
-        unbinder = ButterKnife.bind(this, rootView);
-        initView();
-        toolbar.setTitle("video");
-        initPlayer();
-        return rootView;
-    }
-
-
-    //{"duration":34268,"path":"/storage/emulated/0/b8273312cb47a1bc311094e634bf20e6.mp4"}
-    private void initPlayer() {
-        IjkMediaPlayer.loadLibrariesOnce(null);
-        IjkMediaPlayer.native_profileBegin("libijkffmpeg.so");
+        if (mView == null) {
+            mView = inflater.inflate(R.layout.fragment_video, container, false);
+            unbinder = ButterKnife.bind(this, mView);
+            toolbar.setTitle("video");
+            initView();
+        }
+        return mView;
     }
 
     private void initView() {
@@ -78,25 +72,19 @@ public class VideoFragment extends LhyFragment {
         rlvVideo.setLayoutManager(layout);
         mVideoAdapter = new VideoAdapter(null);
         rlvVideo.setAdapter(mVideoAdapter);
-//        mVideoAdapter.setOnItemClickListener(new VideoAdapter.ItemClickListener() {
-//            @Override
-//            public void onClick(VideoView3 videoView, VideoBean videoBean, int pos) {
-//                videoView.setVideoPath(videoBean.getPath());
-//            }
-//        });
+
         rlvVideo.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 int firstVisibleItemPosition = layout.findFirstVisibleItemPosition();
                 int lastVisibleItemPosition = layout.findLastVisibleItemPosition();
-                LhyVideoView currenVideoView = PlayerManager.instance().getCurrenVideoView();
-                if(currenVideoView !=null){
-                    int tag = PlayerManager.getCurrentPos();
-                    Logger.d("tag:"+tag);
-                    if(tag<firstVisibleItemPosition||tag>lastVisibleItemPosition){
-                        PlayerManager.instance().releaseVideoView();
-                    }
-                }
+//                LhyVideoView currenVideoView = PlayerManager.instance().getCurrenVideoView();
+//                if(currenVideoView !=null){
+//                    int tag = PlayerManager.getCurrentPos();
+//                    if(tag<firstVisibleItemPosition||tag>lastVisibleItemPosition){
+//                        PlayerManager.instance().releaseVideoView();
+//                    }
+//                }
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
@@ -105,24 +93,32 @@ public class VideoFragment extends LhyFragment {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
-//       rlvVideo.setRecyclerListener(new RecyclerView.RecyclerListener() {
-//           @Override
-//           public void onViewRecycled(RecyclerView.ViewHolder holder) {
-//               Logger.d("setRecyclerListener");
-//               VideoAdapter.VideoHolder holder1 = (VideoAdapter.VideoHolder) holder;
-//               holder1.release();
-//           }
-//       });
+        RxPermissions rxPermissions = new RxPermissions(getActivity());
+        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean aBoolean) throws Exception {
+                        if(aBoolean){
+                            scanVideo();
+                        }else {
+                            ToastUtils.showString("无读写SD卡权限");
+                        }
+                    }
+                });
 
+
+        //1*0.05
+    }
+
+    private void scanVideo() {
         Observable.just(VideoUtils.getList(JellyApplicaiton.getContext()))
                 .subscribeOn(Schedulers.io())
-                .compose(this.<List<VideoBean>>bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<List<VideoBean>>bindToLifecycle())
                 .subscribe(new RxObserver<List<VideoBean>>() {
                     @Override
                     public void onSuccess(List<VideoBean> value) {
                         mVideoAdapter.setNewData(value);
-                        Logger.d(new Gson().toJson(value));
                     }
                 });
     }
@@ -150,11 +146,5 @@ public class VideoFragment extends LhyFragment {
 //            mVideoView.enterBackground();
 //        }
 //        IjkMediaPlayer.native_profileEnd();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
     }
 }

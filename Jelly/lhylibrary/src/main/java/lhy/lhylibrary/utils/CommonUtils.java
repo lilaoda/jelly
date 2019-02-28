@@ -167,4 +167,12 @@ public class CommonUtils {
         }
         return 0;
     }
+
+    public static int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
+    public static int getScreenHeigth(Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
+    }
 }

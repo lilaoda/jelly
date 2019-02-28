@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "27.0.3"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 26
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion  rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
@@ -43,6 +43,8 @@ dependencies {
     api 'com.squareup.retrofit2:retrofit:2.3.0'
     api 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     api 'com.squareup.retrofit2:converter-gson:2.3.0'
+//    gson
+    api 'com.google.code.gson:gson:2.8.5'
     //权限管理
     api 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
     api 'com.orhanobut:logger:2.2.0'

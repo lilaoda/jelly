@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="G:\jellyApp\Jelly\uikit\libs"><file name="fastjson-1.1.34.android.jar" path="G:\jellyApp\Jelly\uikit\libs\fastjson-1.1.34.android.jar"/><file name="java-json.jar" path="G:\jellyApp\Jelly\uikit\libs\java-json.jar"/></source></dataSet><dataSet config="debug"><source path="G:\jellyApp\Jelly\uikit\src\debug\jniLibs"/></dataSet></merger>

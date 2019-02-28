@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,21 +11,73 @@
         android:layout_height="match_parent"
         android:src="@mipmap/test1" />
 
-    <!--<ImageView-->
-    <!--android:id="@+id/iv_play"-->
-    <!--android:layout_width="50dp"-->
-    <!--android:layout_height="50dp"-->
-    <!--android:layout_gravity="center"-->
-    <!--android:background="@drawable/video_play_selector" />-->
-
-    <TextView
-        android:id="@+id/text_title"
+    <RelativeLayout
+        android:id="@+id/controller_top"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:background="#aa000000"
-        android:gravity="center_vertical|left"
-        android:text="我是标题"
-        android:textColor="@color/white" />
+        android:layout_height="34dp"
+        android:background="#77000000">
+
+        <ImageButton
+            android:id="@+id/controller_back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@null"
+            android:src="@mipmap/back"/>
+
+        <TextView
+            android:id="@+id/controller_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/controller_back"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="file name"/>
+
+        <!--<TextView-->
+            <!--android:id="@+id/text_title"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:background="#aa000000"-->
+            <!--android:gravity="center_vertical|left"-->
+            <!--android:text="我是标题"-->
+            <!--android:textColor="@color/white" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/mediacontroller_time"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginRight="5dp"-->
+            <!--android:text="17:22"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:textSize="15sp"/>-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/mediacontroller_imgBattery"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginRight="5dp"-->
+            <!--android:layout_toLeftOf="@+id/mediacontroller_time"-->
+            <!--android:gravity="center_vertical" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/mediacontroller_Battery"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginRight="-10dp"-->
+            <!--android:layout_toLeftOf="@+id/mediacontroller_imgBattery"-->
+            <!--android:gravity="center_vertical"-->
+            <!--android:text="45%"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:textSize="15sp"/>-->
+    </RelativeLayout>
+
 
     <ProgressBar
         android:id="@+id/loading"
@@ -38,11 +90,11 @@
     <LinearLayout
         android:id="@+id/ll_error"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/text_retry"
@@ -53,7 +105,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/iv_play"
+        android:id="@+id/iv_start"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
@@ -62,7 +114,16 @@
     <RelativeLayout
         android:id="@+id/rl_play"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/iv_play"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:src="@android:drawable/ic_media_play"/>
 
         <!--进度指示 -->
         <LinearLayout
@@ -108,10 +169,11 @@
 
     <RelativeLayout
         android:id="@+id/rl_wifi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/text_continue_play"
@@ -120,4 +182,4 @@
             android:text="继续播放"
             android:textColor="@color/color_333" />
     </RelativeLayout>
-</FrameLayout>
+</merge>

@@ -20,16 +20,13 @@ package lhy.jelly.view;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -49,7 +46,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import lhy.ijkplayer.R;
 import lhy.ijkplayer.media.FileMediaDataSource;
 import lhy.ijkplayer.media.IRenderView;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -88,7 +84,10 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
     private int mCurrentBufferPercentage;
     private IMediaPlayer.OnErrorListener mOnErrorListener;
     private IMediaPlayer.OnInfoListener mOnInfoListener;
-    private int mSeekWhenPrepared;  // recording the seek position while preparing
+    /**
+     * recording the seek position while preparing
+     */
+    private int mSeekWhenPrepared;
     private boolean mCanPause = true;
     private boolean mCanSeekBack = true;
     private boolean mCanSeekForward = true;
@@ -166,18 +165,7 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
                 LayoutParams.MATCH_PARENT, Gravity.CENTER);
         mMediaController.setLayoutParams(lp);
         mContainer.addView(mMediaController);
-        mMediaController.setOnFullScreenClickListener(new LhyVideoController.OnFullScreenClickListener() {
-            @Override
-            public void onFullScreenClick() {
-                if (isFullScreen) {
-                    exitFullScreen();
-                } else {
-                    enterFullScreen();
-                }
-            }
-        });
         mMediaController.setMediaPlayer(this);
-        mMediaController.updateController(LhyVideoController.STATUS_NORMAL);
     }
 
     public void setVideoPath(String path) {
@@ -248,7 +236,6 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
             mPrepareStartTime = System.currentTimeMillis();
             mMediaPlayer.prepareAsync();
             Log.d(TAG, "openVideo: mMediaPlayer.prepareAsync()");
-
             // we don't set the target state here either, but preserve the
             // target state that was there before.
             mCurrentState = STATE_PREPARING;
@@ -295,12 +282,11 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
             if (mOnPreparedListener != null) {
                 mOnPreparedListener.onPrepared(mMediaPlayer);
             }
-            mMediaController.updateController(LhyVideoController.STATUS_PREDPARED);
 
             mVideoWidth = mp.getVideoWidth();
             mVideoHeight = mp.getVideoHeight();
-
-            int seekToPosition = mSeekWhenPrepared;  // mSeekWhenPrepared may be changed after seekTo() call
+            // mSeekWhenPrepared may be changed after seekTo() call
+            int seekToPosition = mSeekWhenPrepared;
             if (seekToPosition != 0) {
                 seekTo(seekToPosition);
             }
@@ -308,17 +294,10 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
                 if (mTextureView != null) {
                     mTextureView.setVideoSize(mVideoWidth, mVideoHeight);
                     mTextureView.setVideoSampleAspectRatio(mVideoSarNum, mVideoSarDen);
-                    if (mTargetState == STATE_PLAYING) {
-                        start();
-                    }
-                }
-            } else {
-                // We don't know the video size yet, but should start anyway.
-                // The video size might be reported to us later.
-                if (mTargetState == STATE_PLAYING) {
-                    start();
                 }
             }
+            mMediaController.updateController(LhyVideoController.STATUS_PLAY_PAUSE);
+            start();
         }
     };
 
@@ -374,11 +353,14 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
                         case IMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED:
                             mVideoRotationDegree = arg2;
                             Log.d(TAG, "MEDIA_INFO_VIDEO_ROTATION_CHANGED: " + arg2);
-                            if (mTextureView != null)
+                            if (mTextureView != null) {
                                 mTextureView.setVideoRotation(arg2);
+                            }
                             break;
                         case IMediaPlayer.MEDIA_INFO_AUDIO_RENDERING_START:
                             Log.d(TAG, "MEDIA_INFO_AUDIO_RENDERING_START:");
+                            break;
+                        default:
                             break;
                     }
                     return true;
@@ -405,32 +387,33 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
                      * if we're attached to a window. When we're going away and no
                      * longer have a window, don't bother showing the user an error.
                      */
-                    if (getWindowToken() != null) {
-                        Resources r = mAppContext.getResources();
-                        int messageId;
+//                    if (getWindowToken() != null) {
+//                        Resources r = mAppContext.getResources();
+//                        int messageId;
+//
+//                        if (framework_err == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
+//                            messageId = R.string.VideoView_error_text_invalid_progressive_playback;
+//                        } else {
+//                            messageId = R.string.VideoView_error_text_unknown;
+//                        }
+//
+//                        new AlertDialog.Builder(getContext())
+//                                .setMessage(messageId)
+//                                .setPositiveButton(R.string.VideoView_error_button,
+//                                        new DialogInterface.OnClickListener() {
+//                                            public void onClick(DialogInterface dialog, int whichButton) {
+//                                                /* If we get here, there is no onError listener, so
+//                                                 * at least inform them that the video is over.
+//                                                 */
+//                                                if (mOnCompletionListener != null) {
+//                                                    mOnCompletionListener.onCompletion(mMediaPlayer);
+//                                                }
+//                                            }
+//                                        })
+//                                .setCancelable(false)
+//                                .show();
+//                    }
 
-                        if (framework_err == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
-                            messageId = R.string.VideoView_error_text_invalid_progressive_playback;
-                        } else {
-                            messageId = R.string.VideoView_error_text_unknown;
-                        }
-
-                        new AlertDialog.Builder(getContext())
-                                .setMessage(messageId)
-                                .setPositiveButton(R.string.VideoView_error_button,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int whichButton) {
-                                                /* If we get here, there is no onError listener, so
-                                                 * at least inform them that the video is over.
-                                                 */
-                                                if (mOnCompletionListener != null) {
-                                                    mOnCompletionListener.onCompletion(mMediaPlayer);
-                                                }
-                                            }
-                                        })
-                                .setCancelable(false)
-                                .show();
-                    }
                     return true;
                 }
             };
@@ -502,7 +485,7 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
         mOnInfoListener = l;
     }
 
-    /*
+    /**
      * release the media player in any state
      */
     public void release(boolean cleartargetstate) {
@@ -522,25 +505,30 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
         }
     }
 
+    public void beginPlay() {
+        openVideo();
+    }
+
+    public void rePlay() {
+        start();
+        mMediaController.updateController(LhyVideoController.STATUS_PLAY_PAUSE);
+    }
+
     @Override
     public void start() {
-        Logger.d("isInPlaybackState:"+isInPlaybackState());
         if (isInPlaybackState()) {
             mMediaPlayer.start();
             mCurrentState = STATE_PLAYING;
-            mMediaController.updateController(LhyVideoController.STATUS_PLAYING);
         }
         mTargetState = STATE_PLAYING;
     }
 
     @Override
     public void pause() {
-        Logger.d("isInPlaybackState:"+isInPlaybackState());
         if (isInPlaybackState()) {
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentState = STATE_PAUSED;
-                mMediaController.updateController(LhyVideoController.STATUS_PAUSE);
             }
         }
         mTargetState = STATE_PAUSED;
@@ -670,8 +658,9 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         surface.release();
         mSurface = null;
-        if (mMediaPlayer != null)
+        if (mMediaPlayer != null){
             mMediaPlayer.setDisplay(null);
+        }
         return false;
     }
 
@@ -695,13 +684,13 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     private boolean isFullScreen = false;
-    //    ViewGroup parent;
-    ViewGroup.LayoutParams oldParams;
+    private ViewGroup.LayoutParams oldParams;
 
     public void enterFullScreen() {
         NiceUtil.hideActionBar(getContext());
-        Activity activity = NiceUtil.scanForActivity(getContext());
+        Activity activity = PlayUtils.scanForActivity(getContext());
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         ViewGroup contentView = activity.findViewById(android.R.id.content);
         oldParams = new LayoutParams(mContainer.getLayoutParams());
@@ -712,7 +701,7 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
 
     public void exitFullScreen() {
         NiceUtil.hideActionBar(getContext());
-        Activity activity = NiceUtil.scanForActivity(getContext());
+        Activity activity = PlayUtils.scanForActivity(getContext());
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         ViewGroup contentView = activity.findViewById(android.R.id.content);
         contentView.removeView(mContainer);
@@ -720,15 +709,13 @@ public class LhyVideoView extends FrameLayout implements MediaController.MediaPl
         isFullScreen = false;
     }
 
-    //first play
-    public void play() {
-        if (mMediaPlayer == null) {
-            //第一次播放
-            openVideo();
-        } else if (isInPlaybackState()) {
-            //播放完成后再次播放
+    public boolean isFullScreen() {
+        return isFullScreen;
+    }
+
+    public void resume() {
+        if (mCurrentState == STATE_PAUSED) {
             start();
         }
-        mTargetState = STATE_PLAYING;
     }
 }

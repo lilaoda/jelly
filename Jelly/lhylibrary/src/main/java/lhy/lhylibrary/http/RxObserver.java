@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.google.gson.JsonParseException;
 
-
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -53,7 +52,7 @@ public abstract class RxObserver<T> implements Observer<T> {
         this.dialogMsg = dialogMsg;
     }
 
-    public RxObserver(Activity mActivity, String dialogMsg, boolean isShowToast) {
+    public RxObserver(boolean isShowToast,Activity mActivity, String dialogMsg) {
         this.mActivity = mActivity;
         this.isShowToast = isShowToast;
         this.dialogMsg = dialogMsg;

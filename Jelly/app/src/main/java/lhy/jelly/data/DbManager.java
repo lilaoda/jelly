@@ -19,7 +19,6 @@ public class DbManager {
     private static DbManager instance;
     private DaoSession mDaoSession;
 
-
     private DbManager(Context context) {
         init(context);
     }

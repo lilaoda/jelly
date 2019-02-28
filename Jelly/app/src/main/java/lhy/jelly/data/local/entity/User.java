@@ -1,8 +1,9 @@
 package lhy.jelly.data.local.entity;
 
-import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.Unique;
 
 import lhy.jelly.data.local.gen.DaoSession;
 import lhy.jelly.data.local.gen.UserDao;
@@ -18,6 +19,12 @@ import lhy.jelly.data.local.gen.UserDao;
 public class User {
 
     private String name;
+    private int age;
+    @Unique
+    private String account;
+    private String password;
+    private String sex;
+    private String token;
     private String phone;
     /**
      * Used to resolve relations
@@ -30,9 +37,15 @@ public class User {
     @Generated(hash = 1507654846)
     private transient UserDao myDao;
 
-    @Generated(hash = 262318103)
-    public User(String name, String phone) {
+    @Generated(hash = 820808342)
+    public User(String name, int age, String account, String password, String sex,
+                String token, String phone) {
         this.name = name;
+        this.age = age;
+        this.account = account;
+        this.password = password;
+        this.sex = sex;
+        this.token = token;
         this.phone = phone;
     }
 
@@ -46,6 +59,46 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getAge() {
+        return this.age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getAccount() {
+        return this.account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getSex() {
+        return this.sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getPhone() {
@@ -100,4 +153,5 @@ public class User {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getUserDao() : null;
     }
+
 }

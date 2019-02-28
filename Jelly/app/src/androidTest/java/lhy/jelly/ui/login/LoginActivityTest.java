@@ -1,8 +1,15 @@
 package lhy.jelly.ui.login;
 
+import com.google.gson.Gson;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.auth.AuthService;
+import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.orhanobut.logger.Logger;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +24,7 @@ import io.reactivex.functions.Function;
  * Created by Lihy on 2018/4/26 09:43
  * E-Mail ：liheyu999@163.com
  */
+@RunWith(AndroidJUnit4.class)
 public class LoginActivityTest {
 
     @Test
@@ -69,5 +77,33 @@ public class LoginActivityTest {
 //                    }
 //                })
                 ;
+    }
+
+    @Before
+    public void initNIM(){
+
+    }
+
+    @Test
+    public void doLogin() {
+        LoginInfo info = new LoginInfo("13922239152","KFJSALFJALFJ"); // config...
+        NIMClient.getService(AuthService.class).login(info)
+                .setCallback(new RequestCallback<LoginInfo>() {
+
+                    @Override
+                    public void onSuccess(LoginInfo param) {
+                        Logger.d(new Gson().toJson(param));
+                    }
+
+                    @Override
+                    public void onFailed(int code) {
+
+                    }
+
+                    @Override
+                    public void onException(Throwable exception) {
+
+                    }
+                });
     }
 }

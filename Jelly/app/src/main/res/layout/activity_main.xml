@@ -14,28 +14,25 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-       <FrameLayout
-           android:id="@+id/fl_content"
-           android:layout_width="match_parent"
-           android:layout_height="0dp"
-           android:layout_weight="1"/>
+        <FrameLayout
+            android:id="@+id/fl_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#cfcdcd" />
 
-        <lhy.lhylibrary.view.tablayout.CommonTabLayout
-            android:alpha="100"
-            android:id="@+id/tabLayout"
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/bottom_view"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            tl:tl_iconHeight="23dp"
-            tl:tl_iconWidth="23dp"
-            tl:tl_indicator_color="#2C97DE"
-            tl:tl_indicator_height="0dp"
-            tl:tl_textSelectColor="@color/colorPrimary"
-            tl:tl_textUnselectColor="#66000000"
-            tl:tl_underline_height="0dp" />
+            android:gravity="center"
+            app:itemIconTint="@color/selector_color_tab"
+            app:itemTextColor="@color/selector_color_tab"
+            app:menu="@menu/menu_nav" />
     </LinearLayout>
 
 

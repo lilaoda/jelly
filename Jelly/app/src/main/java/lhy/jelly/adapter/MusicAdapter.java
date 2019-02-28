@@ -1,5 +1,6 @@
 package lhy.jelly.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageButton;
@@ -8,7 +9,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
@@ -34,11 +34,15 @@ public class MusicAdapter extends BaseItemDraggableAdapter<MusicBean, MusicAdapt
     @Override
     protected void convert(MusicHolder helper, MusicBean item) {
         int layoutPosition = helper.getLayoutPosition();
-        Logger.d(layoutPosition);
         helper.textMusicArtist.setText(item.getArtist());
         helper.textMusicName.setText(item.getTitle());
         Glide.with(helper.imgMusic).load(mImgArray[layoutPosition % 5]).into(helper.imgMusic);
 //        Glide.with(helper.imgMusic).load(item.getUrl()).into(helper.imgMusic);
+    }
+
+    @Override
+    public void addData(@NonNull MusicBean data) {
+        super.addData(data);
     }
 
     public static class MusicHolder extends BaseViewHolder {

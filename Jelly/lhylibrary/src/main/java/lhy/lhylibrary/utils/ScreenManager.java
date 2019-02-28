@@ -19,14 +19,12 @@ public class ScreenManager {
     private static final String TAG = "ScreenManager";
     private Context mContext;
     private static ScreenManager mSreenManager;
-    // 使用弱引用，防止内存泄漏
     private WeakReference<Activity> mActivityRef;
 
     private ScreenManager(Context mContext) {
         this.mContext = mContext;
     }
 
-    // 单例模式
     public static ScreenManager getScreenManagerInstance(Context context) {
         if (mSreenManager == null) {
             mSreenManager = new ScreenManager(context);
