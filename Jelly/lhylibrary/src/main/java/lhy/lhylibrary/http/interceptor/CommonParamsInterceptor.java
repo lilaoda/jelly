@@ -2,6 +2,7 @@ package lhy.lhylibrary.http.interceptor;
 
 import java.io.IOException;
 
+import lhy.lhylibrary.BuildConfig;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -12,7 +13,7 @@ import okhttp3.Response;
  * Created by Liheyu on 2017/3/9.
  * Email:liheyu999@163.com
  *
- * 根据方法自动适配的公共请求头
+ * 根据方法自动添加参数的公共请求头
  */
 
 public class CommonParamsInterceptor implements Interceptor {
@@ -23,7 +24,7 @@ public class CommonParamsInterceptor implements Interceptor {
 
         if (request.method().equals("GET")) {
             HttpUrl httpUrl = request.url().newBuilder()
-                    .addQueryParameter("version", "xxx")
+                    .addQueryParameter("version", BuildConfig.VERSION_NAME)
                     .addQueryParameter("device", "Android")
                     .addQueryParameter("timestamp", String.valueOf(System.currentTimeMillis()))
                     .build();
@@ -38,7 +39,7 @@ public class CommonParamsInterceptor implements Interceptor {
                 }
 
                 formBody = bodyBuilder
-                        .addEncoded("version", "xxx")
+                        .addEncoded("version", BuildConfig.VERSION_NAME)
                         .addEncoded("device", "Android")
                         .addEncoded("timestamp", String.valueOf(System.currentTimeMillis()))
                         .build();

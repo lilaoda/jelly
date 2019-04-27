@@ -1,6 +1,8 @@
 package lhy.lhylibrary.http;
 
 
+import android.support.annotation.RawRes;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -14,9 +16,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import lhy.lhylibrary.R;
 import lhy.lhylibrary.base.LhyApplication;
 import lhy.lhylibrary.http.interceptor.CacheIntercepter;
-import lhy.lhylibrary.http.interceptor.HeadIntercepter;
+import lhy.lhylibrary.http.interceptor.HeadInterceptor;
 import lhy.lhylibrary.utils.FileUtils;
 import okhttp3.Cache;
 import okhttp3.ConnectionSpec;
@@ -31,8 +34,8 @@ public class OkhttpManager {
     private static OkhttpManager instance;
     private final OkHttpClient.Builder mOkHttpBuilder;
 
-    private static final int CONNECTIMEOUT = 10000;
-    private static final int READTIMEOUT = 10000;
+    private static final int CONNECTIMEOUT = 3000;
+    private static final int READTIMEOUT = 3000;
 
     private OkhttpManager() {
 
@@ -40,14 +43,8 @@ public class OkhttpManager {
                 .connectTimeout(CONNECTIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(READTIMEOUT, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
-                .addInterceptor(new HeadIntercepter())
+                .addInterceptor(new HeadInterceptor())
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-//                .hostnameVerifier(new HostnameVerifier() {
-//                    @Override
-//                    public boolean verify(String hostname, SSLSession session) {
-//                        return true;
-//                    }
-//                })
                 .connectionSpecs(Arrays.asList(ConnectionSpec.CLEARTEXT, ConnectionSpec.MODERN_TLS));
 
     }
@@ -110,18 +107,19 @@ public class OkhttpManager {
 //        return list;
 //    }
 
-//读取证书文件
-//public static InputStream getCertificate() {
-//    InputStream inputStream = null;
-//    try {
-////            inputStream = BaseApplication.getInstance().getAssets().open("1730424__sxjdfreight.com.pem");
-////        inputStream = BaseApplication.getInstance().getResources().openRawResource(R.raw.sxjd);
-//    } catch (Exception e) {
-//        e.printStackTrace();
-//    }
-//    return inputStream;
-//}
 
+    /**
+     *   读取证书文件
+     */
+    public static InputStream getCertificate(@RawRes int rawId) {
+        return LhyApplication.getInstance().getResources().openRawResource(rawId);
+    }
+
+    /**
+     * 设置SSL证书
+     * @param certificates 证书输入流
+     * @return SSLSocketFactory
+     */
     public SSLSocketFactory setCertificates(InputStream... certificates) {
         SSLSocketFactory sslSocketFactory = null;
         try {
@@ -155,7 +153,12 @@ public class OkhttpManager {
         return sslSocketFactory;
     }
 
-    public SSLSocketFactory setDoubleCertificates(InputStream... certificates) {
+    /**
+     * 与服务端进行双向证书认证
+     * @param certificates  证书输入流
+     * @return SSLSocketFactory
+     */
+    public SSLSocketFactory setDoubleCertificates(String keyPwd,InputStream... certificates) {
         SSLSocketFactory sslSocketFactory = null;
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
@@ -179,10 +182,10 @@ public class OkhttpManager {
 
             //初始化keystore
             KeyStore clientKeyStore = KeyStore.getInstance("BKS");
-            clientKeyStore.load(LhyApplication.getInstance().getAssets().open("keystore.bks"), "brucegao".toCharArray());
+            clientKeyStore.load(LhyApplication.getInstance().getAssets().open("keystore.bks"), keyPwd.toCharArray());
 
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(clientKeyStore, "brucegao".toCharArray());
+            keyManagerFactory.init(clientKeyStore, keyPwd.toCharArray());
 
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
             sslSocketFactory = sslContext.getSocketFactory();

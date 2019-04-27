@@ -23,7 +23,6 @@ public class NetworkUtls {
      * @param context
      * @return
      */
-    @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
     public static boolean isAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -36,7 +35,6 @@ public class NetworkUtls {
      * @param context
      * @return
      */
-    @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
     public static boolean iwWifiConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -49,11 +47,9 @@ public class NetworkUtls {
      * @param context
      * @return
      */
-    @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
     public static boolean isConnceted(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-//        return networkInfo != null && networkInfo.getState().equals(NetworkInfo.State.CONNECTED);
         return networkInfo != null && networkInfo.isConnected();
     }
 
