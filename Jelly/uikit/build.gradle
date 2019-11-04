@@ -35,10 +35,10 @@ android {
 
 dependencies {
     api fileTree(dir: 'libs', include: '*.jar')
-    api("com.android.support:appcompat-v7:${V7_APPCOMPAT_VERSION}")
-    api("com.android.support:support-v4:${V4_SUPPORT_VERSION}")
-    api("com.android.support:design:${DESIGIN_SUPPORT_VERSION}")
-    api("com.android.support.constraint:constraint-layout:${CONSTRAIT_SUPPORT_VERSION}")
+    implementation deps.support.v7
+    implementation deps.support.v4
+    implementation deps.constraint_layout
+//    api("com.android.support.constraint:constraint-layout:${CONSTRAIT_SUPPORT_VERSION}")
 
     api 'me.everything:overscroll-decor-android:1.0.4'
     api "me.leolin:ShortcutBadger:1.1.17@aar"

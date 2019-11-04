@@ -25,7 +25,6 @@ import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
-import com.squareup.leakcanary.LeakCanary;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengRegisterCallback;
@@ -40,7 +39,7 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 import lhy.jelly.BuildConfig;
 import lhy.jelly.R;
-import lhy.jelly.di.DaggerAppComponent;
+import lhy.jelly.di.AppInjector;
 import lhy.jelly.ui.main.MainActivity;
 import lhy.lhylibrary.base.LhyApplication;
 import lhy.lhylibrary.utils.CommonUtils;
@@ -60,11 +59,16 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return dispatchingAndroidInjector;
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
+//        DaggerAppComponent.builder().application(this).build().inject(this);
+        AppInjector.init(this);
         Stetho.initializeWithDefaults(this);
-        DaggerAppComponent.builder().application(this).build().inject(this);
-        initLeank();
         initLogger();
         initUPush();
         NIMClient.init(this, loginInfo(), options());
@@ -100,14 +104,6 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
 //        NimUIKit.setOnlineStateContentProvider(new DemoOnlineStateContentProvider());
     }
 
-    private void initLeank() {
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
-    }
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -120,12 +116,12 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
         String channelId = "umen";
         try {
             appInfo = this.getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-             channelId = appInfo.metaData.getString("UMENG_CHANNEL");
+            channelId = appInfo.metaData.getString("UMENG_CHANNEL");
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
         UMConfigure.setLogEnabled(BuildConfig.DEBUG);
-        UMConfigure.init(this, Umeng_APP_KEY,channelId,UMConfigure.DEVICE_TYPE_PHONE, Umeng_Message_Secret);
+        UMConfigure.init(this, Umeng_APP_KEY, channelId, UMConfigure.DEVICE_TYPE_PHONE, Umeng_Message_Secret);
         //场景类型设置
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
         //禁止默认的页面统计功能
@@ -150,7 +146,7 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
     private void initLogger() {
         FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
                 .showThreadInfo(true)
-                .methodCount(0)         // (Optional) How many method line to show. Default 2
+                .methodCount(2)         // (Optional) How many method line to show. Default 2
                 .methodOffset(5)        // (Optional) Hides internal method calls up to offset. Default 5
                 .logStrategy(null) // (Optional) Changes the log strategy to print out. Default LogCat
                 .tag(null)   // (Optional) Global tag for every log. Default PRETTY_LOGGER
@@ -161,11 +157,6 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
                 return BuildConfig.DEBUG;
             }
         });
-    }
-
-    @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return dispatchingAndroidInjector;
     }
 
     /**
@@ -200,7 +191,7 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
 
         // 配置附件缩略图的尺寸大小。表示向服务器请求缩略图文件的大小
         // 该值一般应根据屏幕尺寸来确定， 默认值为 Screen.width / 2
-        options.thumbnailSize =CommonUtils.getScreenWidth(this)/ 2;
+        options.thumbnailSize = CommonUtils.getScreenWidth(this) / 2;
 
         // 用户资料提供者, 目前主要用于提供用户资料，用于新消息通知栏中显示消息来源的头像和昵称
         options.userInfoProvider = new UserInfoProvider() {
@@ -230,7 +221,7 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
     private LoginInfo loginInfo() {
         String account = SPUtils.getString("account");
         String token = SPUtils.getString("token");
-        return new LoginInfo(account,token);
+        return new LoginInfo(account, token);
     }
 
     /**
@@ -250,14 +241,9 @@ public class JellyApplicaiton extends LhyApplication implements HasActivityInjec
         }
         if (TextUtils.isEmpty(storageRootPath)) {
             // SD卡应用公共存储区(APP卸载后，该目录不会被清除，下载安装APP后，缓存数据依然可以被加载。SDK默认使用此目录)，该存储区域需要写权限!
-            storageRootPath = Environment.getExternalStorageDirectory() + "/" +context.getPackageName();
+            storageRootPath = Environment.getExternalStorageDirectory() + "/" + context.getPackageName();
         }
 
         return storageRootPath;
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
     }
 }

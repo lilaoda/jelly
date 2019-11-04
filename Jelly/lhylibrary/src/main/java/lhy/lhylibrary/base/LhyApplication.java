@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
+import com.squareup.leakcanary.LeakCanary;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -14,9 +16,11 @@ import java.util.ListIterator;
 import lhy.lhylibrary.http.exception.AppCrashException;
 
 
-public class LhyApplication extends Application {
+public abstract class LhyApplication extends Application   {
 
-    private List<LhyActivity> activitys = new LinkedList<>();
+
+
+    private List<LhyActivity> activities = new LinkedList<>();
     private List<Service> services = new LinkedList<>();
 
     private static LhyApplication instance;
@@ -28,21 +32,29 @@ public class LhyApplication extends Application {
         instance = this;
         context = getApplicationContext();
         AppCrashException.init();
+        initLeak();
+    }
+
+    private void initLeak() {
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        LeakCanary.install(this);
     }
 
     public LhyActivity getCurrentActivity() {
-        if (activitys.size() == 0) {
+        if (activities.size() == 0) {
             return null;
         }
-        return activitys.get(activitys.size() - 1);
+        return activities.get(activities.size() - 1);
     }
 
     public void addActivity(LhyActivity activity) {
-        activitys.add(activity);
+        activities.add(activity);
     }
 
     public void removeActivity(LhyActivity activity) {
-        activitys.remove(activity);
+        activities.remove(activity);
     }
 
     public void addService(Service service) {
@@ -70,7 +82,7 @@ public class LhyApplication extends Application {
     }
 
     public void closeActivity() {
-        ListIterator<LhyActivity> listIterator = activitys.listIterator();
+        ListIterator<LhyActivity> listIterator = activities.listIterator();
         while (listIterator.hasNext()) {
             AppCompatActivity activity = listIterator.next();
             if (activity != null) {
@@ -80,7 +92,7 @@ public class LhyApplication extends Application {
     }
 
     public void finishOtherActivity(LhyActivity nowAct) {
-        ListIterator<LhyActivity> listIterator = activitys.listIterator();
+        ListIterator<LhyActivity> listIterator = activities.listIterator();
         while (listIterator.hasNext()) {
             AppCompatActivity activity = listIterator.next();
             if (activity != null && activity != nowAct) {
@@ -90,7 +102,7 @@ public class LhyApplication extends Application {
     }
 
     public void finishTheActivity(Class<? extends LhyActivity> nowAct) {
-        ListIterator<LhyActivity> listIterator = activitys.listIterator();
+        ListIterator<LhyActivity> listIterator = activities.listIterator();
         while (listIterator.hasNext()) {
             AppCompatActivity activity = listIterator.next();
             if (activity != null && TextUtils.equals(activity.getClass().getName(), nowAct.getName())) {
@@ -106,4 +118,5 @@ public class LhyApplication extends Application {
     public static Context getContext() {
         return context;
     }
+
 }

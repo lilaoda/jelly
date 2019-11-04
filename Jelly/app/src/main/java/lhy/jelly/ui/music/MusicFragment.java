@@ -35,8 +35,9 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import lhy.jelly.R;
 import lhy.jelly.adapter.MusicAdapter;
-import lhy.jelly.base.AbstractDiFragment;
+import lhy.jelly.base.BaseFragment;
 import lhy.jelly.bean.MusicBean;
+import lhy.jelly.data.remote.ApiService;
 import lhy.lhylibrary.http.RxObserver;
 import lhy.lhylibrary.utils.ToastUtils;
 
@@ -45,7 +46,7 @@ import lhy.lhylibrary.utils.ToastUtils;
  * Email:liheyu999@163.com
  */
 
-public class MusicFragment extends AbstractDiFragment  {
+public class MusicFragment extends BaseFragment {
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -57,14 +58,15 @@ public class MusicFragment extends AbstractDiFragment  {
     @Inject
     ViewModelProvider.Factory viewModelFactory;
 
-//    private CompositeDisposable mDisposables = new CompositeDisposable();
-
     private Unbinder unbinder;
     private MusicAdapter mMusicAdapter;
     private MusicModel musicModel;
     private View mLoadingView;
     private View mEmptyView;
     private View mErrorView;
+
+    @Inject
+    ApiService apiService;
 
 
     public static MusicFragment newInstance() {
@@ -80,9 +82,9 @@ public class MusicFragment extends AbstractDiFragment  {
         View view = inflater.inflate(R.layout.fragment_music, null);
         unbinder = ButterKnife.bind(this, view);
         toolbar.setTitle("music");
-        mLoadingView = getLayoutInflater().inflate(R.layout.view_loading, (ViewGroup) recyclerView.getParent(), false);
-        mEmptyView = getLayoutInflater().inflate(R.layout.view_empty, (ViewGroup) recyclerView.getParent(), false);
-        mErrorView = getLayoutInflater().inflate(R.layout.view_error, (ViewGroup) recyclerView.getParent(), false);
+        mLoadingView = inflater.inflate(R.layout.view_loading, (ViewGroup) recyclerView.getParent(), false);
+        mEmptyView = inflater.inflate(R.layout.view_empty, (ViewGroup) recyclerView.getParent(), false);
+        mErrorView = inflater.inflate(R.layout.view_error, (ViewGroup) recyclerView.getParent(), false);
         return view;
     }
 
@@ -100,11 +102,11 @@ public class MusicFragment extends AbstractDiFragment  {
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean aBoolean) throws Exception {
-                       if(aBoolean){
-                           scanMusic();
-                       }else {
-                           ToastUtils.showString("无读写SD卡权限");
-                       }
+                        if(aBoolean){
+                            scanMusic();
+                        }else {
+                            ToastUtils.showString("无读写SD卡权限");
+                        }
                     }
                 });
     }

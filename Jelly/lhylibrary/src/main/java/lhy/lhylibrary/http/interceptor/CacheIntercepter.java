@@ -29,7 +29,7 @@ public class CacheIntercepter implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        if (NetworkUtls.isConnceted(context)) {
+        if (NetworkUtls.isConnected(context)) {
             request = request.newBuilder()
                     .cacheControl(CacheControl.FORCE_NETWORK)
                     .build();
@@ -40,7 +40,7 @@ public class CacheIntercepter implements Interceptor {
         }
 
         Response response = chain.proceed(request);
-        if (NetworkUtls.isConnceted(context)) {
+        if (NetworkUtls.isConnected(context)) {
             response = response.newBuilder()
                     .removeHeader("Pragma")
                     .addHeader("Chche-Control", "public,max-age=10")

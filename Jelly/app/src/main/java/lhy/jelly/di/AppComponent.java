@@ -19,8 +19,8 @@ import lhy.jelly.base.JellyApplicaiton;
 @Singleton
 @Component(modules = {AndroidInjectionModule.class,
         AndroidSupportInjectionModule.class,
-        AppModule.class,
         ActivityModule.class,
+        AppModule.class
 })
 public interface AppComponent {
     @Component.Builder
@@ -31,5 +31,5 @@ public interface AppComponent {
         AppComponent build();
     }
 
-    void inject(JellyApplicaiton applicaiton);
+    void inject(JellyApplicaiton application);
 }

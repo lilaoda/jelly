@@ -35,7 +35,7 @@ public class NetworkUtls {
      * @param context
      * @return
      */
-    public static boolean iwWifiConnected(Context context) {
+    public static boolean isWifiConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
@@ -47,7 +47,7 @@ public class NetworkUtls {
      * @param context
      * @return
      */
-    public static boolean isConnceted(Context context) {
+    public static boolean isConnected(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();

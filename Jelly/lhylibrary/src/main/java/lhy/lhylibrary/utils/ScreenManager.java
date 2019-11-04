@@ -18,7 +18,7 @@ public class ScreenManager {
 
     private static final String TAG = "ScreenManager";
     private Context mContext;
-    private static ScreenManager mSreenManager;
+    private static ScreenManager mScreenManager;
     private WeakReference<Activity> mActivityRef;
 
     private ScreenManager(Context mContext) {
@@ -26,10 +26,10 @@ public class ScreenManager {
     }
 
     public static ScreenManager getScreenManagerInstance(Context context) {
-        if (mSreenManager == null) {
-            mSreenManager = new ScreenManager(context);
+        if (mScreenManager == null) {
+            mScreenManager = new ScreenManager(context);
         }
-        return mSreenManager;
+        return mScreenManager;
     }
 
     public void setSingleActivity(Activity mActivity) {

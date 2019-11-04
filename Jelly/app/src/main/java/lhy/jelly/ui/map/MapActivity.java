@@ -1,6 +1,6 @@
 package lhy.jelly.ui.map;
 
-import lhy.lhylibrary.base.LhyActivity;
+import lhy.jelly.base.BaseActivity;
 
 /**
  * Created by Liheyu on 2017/8/31.
@@ -8,7 +8,7 @@ import lhy.lhylibrary.base.LhyActivity;
  * 地图显示 点标记  实时定位
  */
 
-public class MapActivity extends LhyActivity  {
+public class MapActivity extends BaseActivity {
 //
 //    private MapView mapView;
 //    private AMap mAMap;

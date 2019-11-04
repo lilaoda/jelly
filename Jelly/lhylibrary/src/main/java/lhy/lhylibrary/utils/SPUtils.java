@@ -10,7 +10,7 @@ public class SPUtils {
 
     private static final String SP_FILE_NAME = "appConfig";
 
-    public static SharedPreferences getSP() {
+    private static SharedPreferences getSP() {
         return LhyApplication.getContext().getSharedPreferences(SP_FILE_NAME, Context.MODE_PRIVATE);
     }
 

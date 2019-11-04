@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 
 import lhy.lhylibrary.R;
 import lhy.lhylibrary.utils.ScreenManager;
-import lhy.lhylibrary.utils.ScreenReceiveUtls;
+import lhy.lhylibrary.utils.ScreenReceiveUtils;
 
 /**
  * Created by Lilaoda on 2017/11/22.
@@ -19,11 +19,11 @@ import lhy.lhylibrary.utils.ScreenReceiveUtls;
  * 保活服务 双重保活，1，双重服务将服务设置为前台服务，2，监听是否锁屏开启1像素保活Activity 3,服务中一直播放无声音乐，待完成
  */
 
-public abstract class AliveService extends Service implements ScreenReceiveUtls.SreenStateListener {
+public abstract class AliveService extends Service implements ScreenReceiveUtils.ScreenStateListener {
 
     private static final int NOTIFY_ID = 0x11;
-    private ScreenReceiveUtls mScreenReceiveUtls;
-    private ScreenManager mScrrenManager;
+    private ScreenReceiveUtils mScreenReceiveUtils;
+    private ScreenManager mScreenManager;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -33,26 +33,26 @@ public abstract class AliveService extends Service implements ScreenReceiveUtls.
         startForeground(NOTIFY_ID, notification);
         startService(new Intent(this, InnerService.class));
 
-        mScreenReceiveUtls = new ScreenReceiveUtls(this);
-        mScrrenManager = ScreenManager.getScreenManagerInstance(this);
-        mScreenReceiveUtls.setScreenReceiverListener(this);
+        mScreenReceiveUtils = new ScreenReceiveUtils(this);
+        mScreenManager = ScreenManager.getScreenManagerInstance(this);
+        mScreenReceiveUtils.setScreenReceiverListener(this);
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mScreenReceiveUtls.stopScreenReceiverListener();
+        mScreenReceiveUtils.stopScreenReceiverListener();
     }
 
     @Override
-    public void onSreenOn() {
-        mScrrenManager.finishActivity();
+    public void onScreenOn() {
+        mScreenManager.finishActivity();
     }
 
     @Override
-    public void onSreenOff() {
-        mScrrenManager.startActivity();
+    public void onScreenOff() {
+        mScreenManager.startActivity();
     }
 
     @Override

@@ -10,7 +10,7 @@ import android.view.TextureView;
 import com.orhanobut.logger.Logger;
 
 import lhy.jelly.R;
-import lhy.jelly.base.AbstractDiActivity;
+import lhy.jelly.base.BaseActivity;
 import lhy.jelly.view.VideoView2;
 import lhy.jelly.view.VideoView3;
 
@@ -18,7 +18,7 @@ import lhy.jelly.view.VideoView3;
  * Created by Lihy on 2018/6/4 14:13
  * E-Mail ：liheyu999@163.com
  */
-public class PlayVidoActivity extends AbstractDiActivity {
+public class PlayVidoActivity extends BaseActivity {
 
 
     private VideoView2 videoView;

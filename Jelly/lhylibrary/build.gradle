@@ -29,33 +29,41 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testImplementation 'junit:junit:4.12'
-    compileOnly 'com.android.support:appcompat-v7:26.1.0'
-    compileOnly 'com.android.support:design:26.1.0'
-//    rxjava2
-    api 'io.reactivex.rxjava2:rxjava:2.1.3'
-    api 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    testImplementation deps.junit
+    api deps.support.v7
+    api deps.support.design
+    api deps.dagger.dagger
+    api deps.dagger.android
+    api deps.dagger.android_support
+
+    api deps.constraint_layout
+    api deps.butterknife.butterknife
+    //rxjava2
+    api deps.rxjava.rxjava
+    api deps.rxjava.rxandroid
     //rxife
-    api 'com.trello.rxlifecycle2:rxlifecycle:2.2.1'
-    api 'com.trello.rxlifecycle2:rxlifecycle-android:2.2.1'
-    api 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.1'
-    //retrofit2
-    api 'com.squareup.retrofit2:retrofit:2.3.0'
-    api 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
-    api 'com.squareup.retrofit2:converter-gson:2.3.0'
-//    gson
-    api 'com.google.code.gson:gson:2.8.5'
+    api deps.rxlifecycle2.rxlifecycle
+    api deps.rxlifecycle2.android
+    api deps.rxlifecycle2.components
+    //retrofit
+    api deps.retrofit.retrofit
+    api deps.retrofit.rxjava2_adapter
+    api deps.retrofit.gson
+    api deps.retrofit.okhttp_logging_interceptor
+    //glide
+    api deps.glide.glide
+    annotationProcessor deps.glide.compiler
+    //leakcanary
+    debugImplementation deps.leakcanary.android_debug
+    releaseImplementation deps.leakcanary.android_release
     //权限管理
-    api 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
-    api 'com.orhanobut:logger:2.2.0'
-    api('com.github.ihsanbal:LoggingInterceptor:2.0.0') {
-        exclude group: 'org.json', module: 'json'
-    }
-    api 'com.github.bumptech.glide:glide:4.7.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
-    api 'com.github.lovetuzitong:MultiImageSelector:1.2'
-    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
-    api 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.5.1'
-    api 'com.liulishuo.filedownloader:library:1.6.5'
-    api 'top.zibin:Luban:1.1.3'
+    api deps.rxpermissions
+    api deps.logger
+    api deps.multiImageSelector
+    api deps.rxpermissions
+    api deps.luban
+    api deps.filedownloader
+    api deps.smartRefreshLayout
+    api deps.baseRecyclerViewAdapterHelper
+    api deps.lifecycle_extensions
 }

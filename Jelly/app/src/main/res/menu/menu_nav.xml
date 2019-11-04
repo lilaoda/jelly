@@ -17,8 +17,8 @@
         android:title="chat"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/setting"
+        android:id="@+id/mine"
         android:icon="@drawable/ic_settings_black_24dp"
-        android:title="setting"
+        android:title="mine"
         app:showAsAction="ifRoom" />
 </menu>

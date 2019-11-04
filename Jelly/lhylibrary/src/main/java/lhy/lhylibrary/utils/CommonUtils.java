@@ -120,18 +120,6 @@ public class CommonUtils {
         listView.setLayoutParams(params);
     }
 
-    /**
-     * 获取状态栏的高度
-     *
-     * @param context
-     * @return
-     */
-    private static int getStatusBarHeight(Context context) {
-        // 获得状态栏高度
-        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        return context.getResources().getDimensionPixelSize(resourceId);
-    }
-
     public static void installAPK(Context context, String apkPath) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -37,7 +37,8 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compileOnly 'com.android.support:appcompat-v7:26.1.0'
+
+    implementation deps.support.v7
     testImplementation 'junit:junit:4.12'
 
 //    # required, enough for most devices.

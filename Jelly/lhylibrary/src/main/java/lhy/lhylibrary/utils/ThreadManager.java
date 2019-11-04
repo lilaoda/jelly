@@ -1,6 +1,7 @@
 package lhy.lhylibrary.utils;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +51,7 @@ public class ThreadManager {
 
         public void execute(Runnable runnable){
             if(threadPoolExecutor==null){
-                threadPoolExecutor=  new ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime, TimeUnit.MICROSECONDS,new LinkedBlockingQueue<Runnable>(10));
+                threadPoolExecutor=  new ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime, TimeUnit.MICROSECONDS,new LinkedBlockingQueue<Runnable>(10), new ThreadPoolExecutor.CallerRunsPolicy());
             }
             threadPoolExecutor.execute(runnable);
         }
