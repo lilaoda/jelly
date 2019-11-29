@@ -1,7 +1,9 @@
 package lhy.lhylibrary.utils;
 
-import android.support.annotation.StringRes;
+
 import android.widget.Toast;
+
+import androidx.annotation.StringRes;
 
 import lhy.lhylibrary.base.LhyApplication;
 

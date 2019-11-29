@@ -1,7 +1,8 @@
 package lhy.jelly.ui.music;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import lhy.jelly.R;
 import lhy.jelly.base.BaseActivity;

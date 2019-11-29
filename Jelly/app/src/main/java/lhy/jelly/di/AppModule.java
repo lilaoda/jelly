@@ -1,9 +1,6 @@
 package lhy.jelly.di;
 
 import android.app.Application;
-import android.content.Context;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -19,29 +16,22 @@ import lhy.jelly.data.remote.ApiService;
  * @author lhy
  */
 
-@Singleton
 @Module(includes = ViewModelModule.class)
 public class AppModule {
 
-    @Singleton
+    @AppScoped
     @Provides
-    public Context provideContext(Application application) {
-        return application;
-    }
-
-    @Singleton
-    @Provides
-    public DbManager provideDbManager(Context context) {
+    public DbManager provideDbManager(Application context) {
         return DbManager.getInstance(context);
     }
 
-    @Singleton
+    @AppScoped
     @Provides
     public ApiService provideApiService() {
         return HttpManager.getInstance().getApiService();
     }
 
-    @Singleton
+    @AppScoped
     @Provides
     public UserDao provideUserDao(DbManager dbManager) {
         return dbManager.getUserDao();

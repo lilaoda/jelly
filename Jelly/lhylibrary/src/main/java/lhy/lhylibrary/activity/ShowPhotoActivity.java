@@ -5,14 +5,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 
@@ -22,6 +23,7 @@ import java.util.List;
 import lhy.lhylibrary.R;
 import lhy.lhylibrary.base.LhyActivity;
 import lhy.lhylibrary.utils.StatusBarUtil;
+
 
 /**
  * Created by Liheyu on 2017/8/23.

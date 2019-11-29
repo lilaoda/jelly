@@ -1,14 +1,22 @@
 package lhy.jelly.ui.music;
 
-import android.arch.lifecycle.ViewModel;
-import android.content.Context;
+import android.app.Application;
+import android.os.SystemClock;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import lhy.jelly.base.Resource;
 import lhy.jelly.bean.MusicBean;
 import lhy.jelly.util.MusicUtils;
+import lhy.jelly.util.RxUtils;
 
 /**
  * Created  on 2018/7/25 15:24
@@ -16,13 +24,50 @@ import lhy.jelly.util.MusicUtils;
  *
  * @author lihy
  */
-public class MusicModel extends ViewModel{
+public class MusicModel extends AndroidViewModel {
 
-    @Inject
-    public MusicModel() {
+    private MutableLiveData<List<MusicBean>> musicData = new MutableLiveData<>();
+    private MutableLiveData<Resource<List<MusicBean>>> musicResource = new MutableLiveData<>();
+
+    public LiveData<List<MusicBean>> getMusicData() {
+        return musicData;
     }
 
-    public List<MusicBean> getMusicList(Context context){
-       return MusicUtils.getMp3Infos(context);
+    public MutableLiveData<Resource<List<MusicBean>>> getMusicResource() {
+        return musicResource;
+    }
+
+    @Inject
+    public MusicModel(@NonNull Application application) {
+        super(application);
+    }
+
+    public Observable<List<MusicBean>> getLocalMusic() {
+        return RxUtils.wrapRx(Observable.create(e -> {
+            e.onNext(MusicUtils.getMp3Infos(getApplication()));
+            e.onComplete();
+        }));
+    }
+
+    public void doRefresh() {
+        Observable<List<MusicBean>> observable = Observable.create(e -> {
+            SystemClock.sleep(5000);
+            e.onNext(MusicUtils.getMp3Infos(getApplication()));
+            e.onComplete();
+        });
+        RxUtils.wrapLiveData(observable, musicResource);
+//        RxUtils.wrapRx(observable)
+//                .doOnSubscribe(s->musicResource.setValue(Resource.loading()))
+//                .subscribe(new HttpObserver<List<MusicBean>>() {
+//                    @Override
+//                    public void onSuccess(List<MusicBean> value) {
+//                        musicResource.setValue(Resource.success(value));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(String msg) {
+//                        musicResource.setValue(Resource.error(msg));
+//                    }
+//                });
     }
 }

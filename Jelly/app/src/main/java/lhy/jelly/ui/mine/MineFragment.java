@@ -1,26 +1,24 @@
 package lhy.jelly.ui.mine;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.BindView;
+import androidx.annotation.Nullable;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import lhy.jelly.R;
-import lhy.jelly.base.AbstractDiFragment;
-import lhy.jelly.view.LhyVideoView;
+import lhy.jelly.base.BaseFragment;
 
 /**
  * Created by Liheyu on 2017/8/21.
  * Email:liheyu999@163.com
  */
 
-public class MineFragment extends AbstractDiFragment {
-    @BindView(R.id.video_view)
-    LhyVideoView videoView;
+public class MineFragment extends BaseFragment {
+
     private Unbinder unbinder;
 
     public static MineFragment newInstance() {
@@ -42,7 +40,6 @@ public class MineFragment extends AbstractDiFragment {
     }
 
     private void initView() {
-        videoView.setVideoPath("/storage/emulated/0/tencent/MobileQQ/shortvideo/DCEFF3216419D2584AA76E21DF625909/1120758336390325855367927240.mp4");
     }
 
     @Override

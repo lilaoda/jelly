@@ -1,19 +1,30 @@
 package lhy.lhylibrary.base;
 
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.trello.rxlifecycle2.components.support.RxFragment;
+
+import dagger.android.support.AndroidSupportInjection;
+import lhy.lhylibrary.di.Injectable;
 
 /**
  * Created by Liheyu on 2017/4/26.
  * Email:liheyu999@163.com
  */
 
-public class LhyFragment extends RxFragment {
+public abstract class LhyFragment extends RxFragment implements Injectable {
 
     private static final String STATUS_IS_HIDDEN = "STATUS_IS_HIDDEN";
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        AndroidSupportInjection.inject(this);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,5 +44,4 @@ public class LhyFragment extends RxFragment {
         super.onSaveInstanceState(outState);
         outState.putBoolean(STATUS_IS_HIDDEN, isHidden());
     }
-
 }

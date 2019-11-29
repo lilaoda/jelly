@@ -18,7 +18,6 @@
 package lhy.jelly.view;
 
 import android.view.View;
-import android.widget.MediaController;
 
 public interface LhyMediaController {
     void hide();
@@ -27,7 +26,7 @@ public interface LhyMediaController {
 
     void setEnabled(boolean enabled);
 
-    void setMediaPlayer(MediaController.MediaPlayerControl player);
+    void setMediaPlayer(LhyMeidaPlayerControl player);
 
     void show(int timeout);
 
@@ -37,11 +36,7 @@ public interface LhyMediaController {
     // Extends
     //----------
     void showOnce(View view);
+    void setAnchorView(View view);
 
     View getView();
-
-    void showLoading();
-    void hideLoading();
-
-    void showThumb(boolean isVisable);
 }

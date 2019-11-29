@@ -3,11 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="200dp">
+    android:layout_height="180dp">
 
-
-    <lhy.jelly.view.LhyVideoView
-        android:id="@+id/video_view"
+    <ImageView
+        android:id="@+id/img_thumb"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="180dp" />
+
+   <com.lhy.player.LhyVideoView
+       android:id="@+id/video"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"/>
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="45dp"-->
+<!--        android:background="@color/gray_light"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        android:orientation="horizontal">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/text_title"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:paddingLeft="10dp"-->
+<!--            android:text="title" />-->
+<!--        <TextView-->
+<!--            android:id="@+id/text_duration"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:paddingRight="20dp"-->
+<!--            android:gravity="right|center_vertical"-->
+<!--            android:text="16.30" />-->
+<!--    </LinearLayout>-->
+
+
 </FrameLayout>

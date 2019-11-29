@@ -1,11 +1,12 @@
 package lhy.lhylibrary.activity;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.annotation.Nullable;
 
 import lhy.lhylibrary.base.LhyActivity;
 import lhy.lhylibrary.utils.ScreenManager;

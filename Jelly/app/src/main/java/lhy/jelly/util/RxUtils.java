@@ -1,10 +1,15 @@
 package lhy.jelly.util;
 
+
+import androidx.lifecycle.MutableLiveData;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import lhy.jelly.base.Resource;
 import lhy.jelly.bean.ApiResult;
+import lhy.lhylibrary.http.HttpObserver;
 import lhy.lhylibrary.http.exception.ApiException;
 
 /**
@@ -31,5 +36,24 @@ public class RxUtils {
         return observable.subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static <T> void wrapLiveData(Observable<T> observable, MutableLiveData<Resource<T>> liveData) {
+        observable.subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(d -> liveData.setValue(Resource.loading()))
+                .subscribe(new HttpObserver<T>() {
+                    @Override
+                    public void onSuccess(T value) {
+                        if(liveData.hasActiveObservers())
+                        liveData.setValue(Resource.success(value));
+                    }
+
+                    @Override
+                    public void onFailure(String msg) {
+                        liveData.setValue(Resource.error(msg));
+                    }
+                });
     }
 }

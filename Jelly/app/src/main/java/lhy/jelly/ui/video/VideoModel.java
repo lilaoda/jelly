@@ -1,6 +1,7 @@
 package lhy.jelly.ui.video;
 
-import android.arch.lifecycle.ViewModel;
+
+import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
@@ -10,7 +11,7 @@ import javax.inject.Inject;
  *
  * @author lihy
  */
-public class VideoModel extends ViewModel{
+public class VideoModel extends ViewModel {
 
     @Inject
     public VideoModel() {

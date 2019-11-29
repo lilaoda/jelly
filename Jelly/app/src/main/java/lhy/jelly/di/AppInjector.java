@@ -4,14 +4,15 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import dagger.android.AndroidInjection;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.HasSupportFragmentInjector;
-import lhy.jelly.base.JellyApplicaiton;
+import lhy.jelly.base.JellyApplication;
 
 /**
  * Created by Lilaoda on 2018/3/29.
@@ -23,8 +24,8 @@ public class AppInjector {
     private AppInjector() {
     }
 
-    public static void init(JellyApplicaiton application) {
-        DaggerAppComponent.builder().application(application).build().inject(application);
+    public static void init(JellyApplication application) {
+//        DaggerAppComponent.builder().application(application).build().inject(application);
         application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -78,14 +79,6 @@ public class AppInjector {
                                 AndroidSupportInjection.inject(f);
                             }
                         }
-
-//                        @Override
-//                        public void onFragmentCreated(FragmentManager fm, Fragment f, Bundle savedInstanceState) {
-//                            super.onFragmentCreated(fm, f, savedInstanceState);
-//                            if (f instanceof Injectable) {
-//                                AndroidSupportInjection.inject(f);
-//                            }
-//                        }
                     }, true);
         }
     }

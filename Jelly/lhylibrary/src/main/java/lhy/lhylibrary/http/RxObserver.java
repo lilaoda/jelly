@@ -38,7 +38,7 @@ public abstract class RxObserver<T> implements Observer<T> {
     private Disposable mDisposable;
     private String dialogMsg;
     private boolean isUserCancel;
-    private boolean isShowToast;
+    private boolean isShowToast = true;
 
     public RxObserver() {
     }

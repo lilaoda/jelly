@@ -4,7 +4,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import lhy.jelly.base.Constant;
 import lhy.jelly.data.remote.ApiService;
-import lhy.lhylibrary.http.OkhttpManager;
+import lhy.lhylibrary.http.OkHttpManager;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -24,7 +24,7 @@ public class HttpManager {
                 .baseUrl(Constant.API_SERVER)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(OkhttpManager.getInstance().getCacheOKhttp())
+                .client(OkHttpManager.getInstance().getCacheOKhttp())
                 .build();
     }
 

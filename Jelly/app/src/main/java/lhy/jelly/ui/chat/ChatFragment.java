@@ -1,16 +1,15 @@
 package lhy.jelly.ui.chat;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.netease.nim.uikit.business.contact.ContactsFragment;
-import com.netease.nim.uikit.business.recent.RecentContactsFragment;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
@@ -18,7 +17,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import lhy.jelly.R;
-import lhy.jelly.adapter.ChatAdapter;
 import lhy.jelly.base.BaseFragment;
 
 /**
@@ -60,17 +58,17 @@ public class ChatFragment extends BaseFragment {
     }
 
     private void initData() {
-        fragments = new ArrayList<>();
-        fragments.add(new RecentContactsFragment());
-        fragments.add(new ContactsFragment());
-        mTitles = new ArrayList<>();
-        mTitles.add("会话");
-        mTitles.add("联系人");
+//        fragments = new ArrayList<>();
+//        fragments.add(new RecentContactsFragment());
+//        fragments.add(new ContactsFragment());
+//        mTitles = new ArrayList<>();
+//        mTitles.add("会话");
+//        mTitles.add("联系人");
     }
 
     private void initView() {
-        viewPager.setAdapter(new ChatAdapter(getFragmentManager(), fragments, mTitles));
-        tabLayout.setupWithViewPager(viewPager);
+//        viewPager.setAdapter(new ChatAdapter(getFragmentManager(), fragments, mTitles));
+//        tabLayout.setupWithViewPager(viewPager);
     }
 
     @Override

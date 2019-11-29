@@ -6,4 +6,7 @@ package lhy.jelly.base;
  */
 public class Constant {
     public static final String API_SERVER="http://192.168.8.101:8085/";
+
+    public static final String ROUTE_PATH_JELLY_MAIN_ACTIVITY = "/jelly/mainActivity";
+    public static final String ROUTE_PATH_PLAY_VIDEO_ACTIVITY = "/jelly/playVideoActivity";
 }

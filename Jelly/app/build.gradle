@@ -20,8 +20,13 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
         multiDexEnabled true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         flavorDimensions "versionCode"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
     }
     buildTypes {
         release {
@@ -39,32 +44,6 @@ android {
         targetGenDir 'src/main/java'
     }
 
-    productFlavors {
-        tencent {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "tencent"]
-        }
-        xiaomi {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "xiaomi"]
-        }
-        huawei {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "huawei"]
-        }
-        baidu {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
-        }
-        wandoujia {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia"]
-        }
-        qihu360 {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "360"]
-        }
-        meizhu {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "meizhu"]
-        }
-        vivo {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "vivo"]
-        }
-    }
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
@@ -88,10 +67,10 @@ android {
         // but continue the build even when errors are found:
         abortOnError false
     }
-    
+
     compileOptions {
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 
@@ -102,35 +81,28 @@ repositories {
 }
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    implementation deps.support.v7
-    implementation deps.support.design
-    testImplementation deps.junit
-    implementation deps.greendao
-    annotationProcessor deps.dagger.compiler
-    annotationProcessor deps.dagger.android_processor
-    annotationProcessor deps.butterknife.butterknife_compiler
+    implementation "androidx.appcompat:appcompat:$androidxVersion"
+    implementation "com.google.android.material:material:$androidxVersion"
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation "org.greenrobot:greendao:$greendaoVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
+    api "com.jakewharton:butterknife:$butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
 
-
-    implementation 'com.android.support:multidex:1.0.3'
     implementation project(':ijkplayer')
-    implementation project(':zxinglibrary')
     implementation project(':lhylibrary')
-    implementation 'com.facebook.stetho:stetho:1.5.0'
-    //组件化基础库
-    implementation  'com.umeng.umsdk:common:1.5.4'
-    implementation  'com.umeng.sdk:utdid:1.1.5.3'
-    //在App上线前请务必删除集成调试库，避免无关信息的打印。
-    implementation  'com.umeng.sdk:debug:1.0.0'
-    implementation 'com.umeng.sdk:analytics:7.5.0'
-    //PushSDK
-    implementation  'com.umeng.umsdk:push:5.0.2'
+    implementation project(':lhyplayer')
+//    implementation 'com.facebook.stetho:stetho:1.5.0'
 
-    implementation  'cn.jzvd:jiaozivideoplayer:6.2.10'
+    implementation  'cn.jzvd:jiaozivideoplayer:7.0.5'
     api 'com.github.xiaoyanger0825:NiceVieoPlayer:v2.2'
-    implementation project(':uikit')
     implementation 'q.rorbin:badgeview:1.1.3'
-//    retrolambdaConfig "net.orfjackal.retrolambda:retrolambda:2.3.0"
+    implementation 'com.google.android.exoplayer:exoplayer:2.10.0'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.10.0'
+    annotationProcessor 'com.alibaba:arouter-compiler:1.2.2'
+
+
 }

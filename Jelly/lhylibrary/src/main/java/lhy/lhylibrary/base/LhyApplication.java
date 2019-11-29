@@ -1,24 +1,44 @@
 package lhy.lhylibrary.base;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.multidex.MultiDex;
+
+import com.alibaba.android.arouter.launcher.ARouter;
 import com.squareup.leakcanary.LeakCanary;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
+import lhy.lhylibrary.BuildConfig;
+import lhy.lhylibrary.di.CommonComponent;
+import lhy.lhylibrary.di.DaggerCommonComponent;
 import lhy.lhylibrary.http.exception.AppCrashException;
 
 
-public abstract class LhyApplication extends Application   {
+public abstract class LhyApplication extends Application implements HasActivityInjector {
 
 
+    @Inject
+    protected DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+    protected CommonComponent mCommonComponent;
+
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return dispatchingAndroidInjector;
+    }
 
     private List<LhyActivity> activities = new LinkedList<>();
     private List<Service> services = new LinkedList<>();
@@ -29,10 +49,27 @@ public abstract class LhyApplication extends Application   {
     @Override
     public void onCreate() {
         super.onCreate();
+        mCommonComponent = DaggerCommonComponent.builder().application(this).build();
         instance = this;
         context = getApplicationContext();
         AppCrashException.init();
         initLeak();
+        initArouter();
+    }
+
+    private void initArouter() {
+        if (BuildConfig.DEBUG) {
+            ARouter.openLog();
+            ARouter.openDebug();
+        }
+        ARouter.init(this);
+    }
+
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     private void initLeak() {

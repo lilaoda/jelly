@@ -1,6 +1,7 @@
 package lhy.jelly.di;
 
-import android.arch.lifecycle.ViewModel;
+
+import androidx.lifecycle.ViewModel;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

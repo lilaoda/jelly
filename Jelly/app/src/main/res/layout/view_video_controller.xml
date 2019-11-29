@@ -8,8 +8,7 @@
     <ImageView
         android:id="@+id/iv_thumb"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@mipmap/test1" />
+        android:layout_height="match_parent" />
 
     <RelativeLayout
         android:id="@+id/controller_top"

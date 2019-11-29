@@ -4,24 +4,41 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 import lhy.lhylibrary.R;
 import lhy.lhylibrary.utils.StatusBarUtil;
 
-public abstract class LhyActivity extends RxAppCompatActivity  {
+public abstract class LhyActivity extends RxAppCompatActivity implements HasSupportFragmentInjector {
 
     private static Handler handler;
+
+    @Inject
+    protected DispatchingAndroidInjector<Fragment> supportFragmentInjector;
+
+    @Override
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return supportFragmentInjector;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidInjection.inject(this);
         LhyApplication.getInstance().addActivity(this);
     }
 
